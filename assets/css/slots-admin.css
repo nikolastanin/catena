@@ -1,0 +1,403 @@
+/**
+ * Admin CSS for Slots Plugin
+ *
+ * @package Slots
+ */
+
+
+/* Admin Menu Icon */
+
+#adminmenu .dashicons-calendar-alt:before {
+    color: #0073aa;
+}
+
+
+/* Custom Post Type Columns */
+
+.column-slot_time,
+.column-slot_duration,
+.column-slot_status {
+    width: 120px;
+}
+
+.column-slot_time .dashicons,
+.column-slot_duration .dashicons,
+.column-slot_status .dashicons {
+    margin-right: 5px;
+    color: #0073aa;
+}
+
+
+/* Meta Boxes */
+
+.slots-meta-box {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.slots-meta-box h4 {
+    margin: 0 0 15px 0;
+    color: #23282d;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.slots-meta-field {
+    margin-bottom: 15px;
+}
+
+.slots-meta-field label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
+}
+
+.slots-meta-field input,
+.slots-meta-field select,
+.slots-meta-field textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.slots-meta-field input:focus,
+.slots-meta-field select:focus,
+.slots-meta-field textarea:focus {
+    outline: none;
+    border-color: #0073aa;
+    box-shadow: 0 0 0 1px #0073aa;
+}
+
+
+/* Settings Page */
+
+.slots-settings-section {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.slots-settings-section h3 {
+    margin: 0 0 15px 0;
+    color: #23282d;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.slots-settings-field {
+    margin-bottom: 20px;
+}
+
+.slots-settings-field label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.slots-settings-field input[type="text"],
+.slots-settings-field input[type="email"],
+.slots-settings-field input[type="url"],
+.slots-settings-field input[type="number"],
+.slots-settings-field select,
+.slots-settings-field textarea {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    border: 2px solid #e1e5e9;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.slots-settings-field input[type="text"]:focus,
+.slots-settings-field input[type="email"]:focus,
+.slots-settings-field input[type="url"]:focus,
+.slots-settings-field input[type="number"]:focus,
+.slots-settings-field select:focus,
+.slots-settings-field textarea:focus {
+    outline: none;
+    border-color: #0073aa;
+    box-shadow: 0 0 0 1px #0073aa;
+}
+
+.slots-settings-field input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.slots-settings-field .description {
+    margin-top: 5px;
+    color: #666;
+    font-style: italic;
+    font-size: 13px;
+}
+
+
+/* Dashboard Widgets */
+
+.slots-dashboard-widget {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.slots-dashboard-widget h4 {
+    margin: 0 0 10px 0;
+    color: #23282d;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.slots-dashboard-widget .widget-content {
+    color: #666;
+    font-size: 13px;
+}
+
+
+/* Custom Fields */
+
+.slots-custom-field {
+    background: #f9f9f9;
+    border: 1px solid #e1e5e9;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.slots-custom-field strong {
+    color: #333;
+}
+
+
+/* Notices */
+
+.slots-notice {
+    background: #fff;
+    border-left: 4px solid #0073aa;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
+    margin: 5px 0 15px;
+    padding: 12px;
+}
+
+.slots-notice.success {
+    border-left-color: #46b450;
+}
+
+.slots-notice.error {
+    border-left-color: #dc3232;
+}
+
+.slots-notice.warning {
+    border-left-color: #ffb900;
+}
+
+.slots-notice.info {
+    border-left-color: #0073aa;
+}
+
+
+/* Tables */
+
+.slots-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+.slots-table th,
+.slots-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #e1e5e9;
+}
+
+.slots-table th {
+    background: #f9f9f9;
+    font-weight: 600;
+    color: #333;
+}
+
+.slots-table tr:hover {
+    background: #f9f9f9;
+}
+
+
+/* Buttons */
+
+.slots-button {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #0073aa;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+.slots-button:hover {
+    background: #005a87;
+    color: #fff;
+}
+
+.slots-button.secondary {
+    background: #f1f1f1;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.slots-button.secondary:hover {
+    background: #e1e1e1;
+}
+
+.slots-button.success {
+    background: #46b450;
+}
+
+.slots-button.success:hover {
+    background: #3d8b46;
+}
+
+.slots-button.danger {
+    background: #dc3232;
+}
+
+.slots-button.danger:hover {
+    background: #c92626;
+}
+
+
+/* Forms */
+
+.slots-form {
+    max-width: 600px;
+}
+
+.slots-form .form-table th {
+    width: 200px;
+}
+
+.slots-form .form-table td {
+    padding: 15px 10px;
+}
+
+
+/* Status Indicators */
+
+.slots-status {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.slots-status.available {
+    background: #d4edda;
+    color: #155724;
+}
+
+.slots-status.booked {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.slots-status.pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.slots-status.cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+
+/* Responsive Design */
+
+@media (max-width: 782px) {
+    .slots-settings-field input[type="text"],
+    .slots-settings-field input[type="email"],
+    .slots-settings-field input[type="url"],
+    .slots-settings-field input[type="number"],
+    .slots-settings-field select,
+    .slots-settings-field textarea {
+        max-width: 100%;
+    }
+    .slots-form .form-table th {
+        width: auto;
+        display: block;
+        padding-bottom: 5px;
+    }
+    .slots-form .form-table td {
+        display: block;
+        padding-left: 0;
+    }
+}
+
+
+/* Slot Meta Box Styles */
+
+#slots_meta_box .form-table th {
+    width: 150px;
+    padding: 15px 10px 15px 0;
+    vertical-align: top;
+}
+
+#slots_meta_box .form-table td {
+    padding: 15px 10px;
+}
+
+#slots_meta_box .form-table input[type="text"],
+#slots_meta_box .form-table input[type="number"],
+#slots_meta_box .form-table select {
+    width: 100%;
+    max-width: 300px;
+}
+
+#slots_meta_box .form-table .description {
+    margin-top: 5px;
+    color: #666;
+    font-style: italic;
+}
+
+#slots_meta_box .form-table tr {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+#slots_meta_box .form-table tr:last-child {
+    border-bottom: none;
+}
+
+
+/* Slot ID field styling */
+
+#slots_meta_box .form-table tr:first-child td strong {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: #0073aa;
+    background: #f9f9f9;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    display: inline-block;
+    min-width: 120px;
+}
+
+#slots_meta_box .form-table tr:first-child td strong:empty::before {
+    content: "Not assigned yet";
+    color: #999;
+    font-style: italic;
+}
