@@ -4,38 +4,27 @@ This document explains how to use the flexible template system for the `[slot_de
 
 ## Overview
 
-The template system allows you to display slot information using different HTML layouts while keeping the same shortcode. You can choose from built-in templates or create your own custom templates.
+The template system automatically selects the appropriate template based on your admin settings. When the "Custom Slot Markup" field is filled out in the admin settings, all shortcodes automatically use the custom editor template. If left empty, the default template is used.
 
-## Built-in Templates
+## Available Templates
 
 ### 1. Default Template (`default`)
 - **File**: `slot-detail.php`
 - **Description**: Standard layout with full information display
-- **Usage**: `[slot_detail id="123"]` or `[slot_detail id="123" template="default"]`
+- **Usage**: Automatically used when Custom Slot Markup is empty
 
-### 2. Minimal Template (`minimal`)
-- **File**: `slot-detail-minimal.php`
-- **Description**: Clean, minimal layout with essential information only
-- **Usage**: `[slot_detail id="123" template="minimal"]`
-
-### 3. Compact Template (`compact`)
-- **File**: `slot-detail-compact.php`
-- **Description**: Space-efficient layout for sidebar or small areas
-- **Usage**: `[slot_detail id="123" template="compact"]`
-
-### 4. Featured Template (`featured`)
-- **File**: `slot-detail-featured.php`
-- **Description**: Highlighted layout with prominent call-to-action
-- **Usage**: `[slot_detail id="123" template="featured"]`
+### 2. Editor Template (`editor`)
+- **File**: `slot-editor.php`
+- **Description**: Customizable layout using admin-defined markup
+- **Usage**: Automatically used when Custom Slot Markup is filled out
 
 ## Shortcode Attributes
 
-All templates support these attributes:
+The `[slot_detail]` shortcode supports these attributes:
 
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `id` | string | current post ID | Slot ID or post ID to display |
-| `template` | string | `default` | Template variation to use |
 | `show_rating` | boolean | `true` | Show/hide star rating |
 | `show_description` | boolean | `true` | Show/hide description |
 | `show_provider` | boolean | `true` | Show/hide provider name |
@@ -47,95 +36,64 @@ All templates support these attributes:
 
 ### Basic Usage
 ```php
-// Default template
+// Uses default template if Custom Slot Markup is empty
+// Uses editor template if Custom Slot Markup is filled
 [slot_detail id="123"]
-
-// Minimal template
-[slot_detail id="123" template="minimal"]
-
-// Compact template
-[slot_detail id="123" template="compact"]
-
-// Featured template
-[slot_detail id="123" template="featured"]
 ```
 
 ### With Custom Attributes
 ```php
 // Hide rating and description
-[slot_detail id="123" template="minimal" show_rating="false" show_description="false"]
+[slot_detail id="123" show_rating="false" show_description="false"]
 
 // Show only provider and RTP
-[slot_detail id="123" template="compact" show_rating="false" show_description="false" show_wager="false"]
+[slot_detail id="123" show_rating="false" show_description="false" show_wager="false"]
 
 // Add custom CSS class
-[slot_detail id="123" template="featured" class="my-custom-slot"]
+[slot_detail id="123" class="my-custom-slot"]
 ```
 
-## Creating Custom Templates
+## Custom Slot Markup
 
-### Method 1: Theme Directory
-Place your custom template in your theme directory:
+To use the editor template, fill out the "Custom Slot Markup" field in the admin settings (Slots-Settings > Slot Editor Markup). This field accepts HTML with special variables that get replaced with actual slot data.
 
-```
-your-theme/
-├── slots/
-│   └── my-custom-template.php
-```
+### Available Variables
 
-### Method 2: Using PHP Functions
-Register a custom template programmatically:
+- `{{slot_image}}` - Slot thumbnail image URL
+- `{{slot_title}}` - Slot title (text only)
+- `{{slot_provider}}` - Provider name (text only, if enabled)
+- `{{slot_rating}}` - Star rating value (e.g., "4.5/5", if enabled)
+- `{{slot_rtp}}` - RTP percentage (e.g., "96.5%", if enabled)
+- `{{slot_wager}}` - Wager range (e.g., "$0.10 - $100", if enabled)
+- `{{slot_id}}` - Slot ID (text only)
+- `{{slot_description}}` - Description/excerpt (formatted text, if enabled)
+- `{{slot_permalink}}` - Slot permalink URL
+- `{{star_rating}}` - Raw star rating HTML
+- `{{rtp_value}}` - RTP value only (e.g., "96.5%")
+- `{{wager_range}}` - Wager range value only (e.g., "$0.10 - $100")
+- `{{provider_name}}` - Provider name only (text only)
+- `{{slot_id_value}}` - Slot ID value only (text only)
 
-```php
-// In your theme's functions.php or a custom plugin
-add_action('init', 'register_my_custom_template');
+### Example Custom Markup
 
-function register_my_custom_template() {
-    slots_register_template('my-custom', array(
-        'name' => 'My Custom Layout',
-        'file' => 'my-custom-template.php',
-        'description' => 'A custom layout for my theme'
-    ));
-}
-```
-
-Then use it:
-```php
-[slot_detail id="123" template="my-custom"]
-```
-
-### Template File Structure
-Your custom template should follow this structure:
-
-```php
-<?php
-/**
- * My Custom Template
- *
- * @package Slots
- */
-
-// Prevent direct access
-if (!defined('ABSPATH')) {
-    exit;
-}
-
-// Variables available:
-// $slot - Slot data array
-// $atts - Shortcode attributes
-// $settings - Plugin settings
-?>
-
+```html
 <div class="my-custom-slot-layout">
-    <h2><?php echo esc_html($slot['title']); ?></h2>
+    <div class="slot-header">
+        <img src="{{slot_image}}" alt="{{slot_title}}" class="slot-image">
+        <h1>{{slot_title}}</h1>
+    </div>
     
-    <?php if (!empty($slot['provider_name'])): ?>
-    <p>Provider: <?php echo esc_html($slot['provider_name']); ?></p>
-    <?php endif; ?>
+    <div class="slot-info">
+        <p>Provider: {{slot_provider}}</p>
+        <p>Rating: {{slot_rating}}</p>
+        <p>RTP: {{slot_rtp}}</p>
+    </div>
     
-    <a href="<?php echo esc_url($slot['permalink']); ?>" class="play-button">
-        Play Now
-    </a>
+    <div class="slot-description">
+        {{slot_description}}
+    </div>
+    
+    <a href="{{slot_permalink}}" class="play-button">Play Now</a>
 </div>
 ```
 
@@ -158,13 +116,13 @@ if (slots_template_exists('my-template')) {
 }
 
 // Get template information
-$template_info = slots_get_template('minimal');
+$template_info = slots_get_template('default');
 
 // Get template file path
-$template_path = slots_get_template_path('featured');
+$template_path = slots_get_template_path('editor');
 
 // Load template manually
-slots_load_template('compact', $slot_data, $attributes);
+slots_load_template('default', $slot_data, $attributes);
 
 // Get all available templates
 $templates = slots_get_template_options();
@@ -185,9 +143,7 @@ This will display all template variations with usage examples.
 Each template has its own CSS classes for easy styling:
 
 - **Default**: `.slot-detail-container`
-- **Minimal**: `.slot-detail-minimal`
-- **Compact**: `.slot-detail-compact`
-- **Featured**: `.slot-detail-featured`
+- **Editor**: `.slot-detail-container` (uses custom markup classes)
 
 ## Extending the System
 

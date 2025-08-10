@@ -27,6 +27,8 @@ class Slots_Public {
         add_action('wp_head', array($this, 'add_custom_styles'));
         add_action('wp_ajax_load_more_slots', array($this, 'load_more_slots'));
         add_action('wp_ajax_nopriv_load_more_slots', array($this, 'load_more_slots'));
+        add_action('wp_ajax_load_slots_grid', array($this, 'load_slots_grid'));
+        add_action('wp_ajax_nopriv_load_slots_grid', array($this, 'load_slots_grid'));
         
         // Filter content for slot posts to show slot_detail shortcode when no content
         //add_filter('the_content', array($this, 'filter_slot_content'));
@@ -242,9 +244,91 @@ class Slots_Public {
         
         ob_start();
         foreach ($slots as $slot) {
-            include SLOTS_PLUGIN_DIR . 'templates/slot-card.php';
+            echo Slots_Admin::render_slot_card($slot);
         }
         $html = ob_get_clean();
+        
+        wp_send_json_success(array(
+            'html' => $html,
+            'has_more' => count($slots) >= $limit
+        ));
+    }
+    
+    /**
+     * Load slots for grid editor (AJAX)
+     */
+    public function load_slots_grid() {
+        // Verify nonce
+        if (!wp_verify_nonce($_POST['nonce'], 'slots_nonce')) {
+            wp_send_json_error('Security check failed');
+        }
+        
+        $page = intval($_POST['page']);
+        $limit = intval($_POST['limit']);
+        $sort = sanitize_text_field($_POST['sort']);
+        
+        // Get slots based on parameters
+        $args = array(
+            'post_type' => 'slot',
+            'post_status' => 'publish',
+            'posts_per_page' => $limit,
+            'paged' => $page
+        );
+        
+        // Set sorting - only random and recent
+        switch ($sort) {
+            case 'random':
+                $args['orderby'] = 'rand';
+                break;
+            case 'recent':
+            default:
+                $args['orderby'] = 'modified';
+                $args['order'] = 'DESC';
+                break;
+        }
+        
+        $query = new WP_Query($args);
+        $slots = array();
+        
+        if ($query->have_posts()) {
+            while ($query->have_posts()) {
+                $query->the_post();
+                $post_id = get_the_ID();
+                
+                $slots[] = array(
+                    'id' => $post_id,
+                    'title' => get_the_title(),
+                    'excerpt' => get_the_excerpt(),
+                    'content' => get_the_content(),
+                    'permalink' => get_permalink(),
+                    'thumbnail' => get_the_post_thumbnail_url($post_id, 'medium'),
+                    'thumbnail_large' => get_the_post_thumbnail_url($post_id, 'large'),
+                    'slot_id' => Slots_Admin::get_slot_meta($post_id, 'slot_id'),
+                    'star_rating' => Slots_Admin::get_slot_meta($post_id, 'star_rating'),
+                    'provider_name' => Slots_Admin::get_slot_meta($post_id, 'provider_name'),
+                    'rtp' => Slots_Admin::get_slot_meta($post_id, 'rtp'),
+                    'min_wager' => Slots_Admin::get_slot_meta($post_id, 'min_wager'),
+                    'max_wager' => Slots_Admin::get_slot_meta($post_id, 'max_wager'),
+                    'modified' => get_the_modified_date('U')
+                );
+            }
+            wp_reset_postdata();
+        }
+        
+        if (empty($slots)) {
+            wp_send_json_success(array('html' => '', 'has_more' => false));
+        }
+        
+        // Generate HTML using the grid editor template functions
+        $html = '';
+        foreach ($slots as $slot) {
+            $html .= generate_single_slot_card_for_ajax($slot, array(
+                'limit' => $limit,
+                'sort' => $sort,
+                'show_filters' => 'true',
+                'show_pagination' => 'true'
+            ));
+        }
         
         wp_send_json_success(array(
             'html' => $html,
@@ -438,5 +522,13 @@ class Slots_Public {
         .no-underline { text-decoration: none !important; }
         .hover\\:text-white:hover { color: #ffffff !important; }
         </style>';
+    }
+    
+    /**
+     * Generate single slot card for AJAX requests
+     */
+    private function generate_single_slot_card_for_ajax($slot, $atts) {
+        // Use the new render_slot_card method from Slots_Admin
+        return Slots_Admin::render_slot_card($slot);
     }
 }

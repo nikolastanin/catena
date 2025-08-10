@@ -40,21 +40,6 @@ class Slots_Template_Manager {
                 'file' => 'slot-detail.php',
                 'description' => __('Standard slot detail layout with full information', 'slots')
             ),
-            'minimal' => array(
-                'name' => __('Minimal', 'slots'),
-                'file' => 'slot-detail-minimal.php',
-                'description' => __('Clean, minimal layout with essential information only', 'slots')
-            ),
-            'compact' => array(
-                'name' => __('Compact', 'slots'),
-                'file' => 'slot-detail-compact.php',
-                'description' => __('Space-efficient layout for sidebar or small areas', 'slots')
-            ),
-            'featured' => array(
-                'name' => __('Featured', 'slots'),
-                'file' => 'slot-detail-featured.php',
-                'description' => __('Highlighted layout with prominent call-to-action', 'slots')
-            ),
             'editor' => array(
                 'name' => __('Custom Editor', 'slots'),
                 'file' => 'slot-editor.php',

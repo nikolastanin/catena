@@ -32,7 +32,6 @@ require_once SLOTS_PLUGIN_DIR . 'includes/class-slots-post-types.php';
 require_once SLOTS_PLUGIN_DIR . 'includes/class-slots-shortcodes.php';
 require_once SLOTS_PLUGIN_DIR . 'includes/class-slots-themes.php';
 require_once SLOTS_PLUGIN_DIR . 'includes/class-slots-template-manager.php';
-require_once SLOTS_PLUGIN_DIR . 'includes/slots-template-functions.php';
 
 // Initialize the plugin
 function slots_init() {

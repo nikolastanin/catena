@@ -45,15 +45,7 @@ class Slots_Admin {
             31
         );
         
-        // Add demo page submenu
-        add_submenu_page(
-            'slots-settings',
-            __('Demo Page', 'slots'),
-            __('Demo Page', 'slots'),
-            'manage_options',
-            'slots-demo',
-            array($this, 'demo_page')
-        );
+
     }
     
     /**
@@ -92,38 +84,54 @@ class Slots_Admin {
             'slots-settings'
         );
         
-        // Display Settings Section
-        add_settings_section(
-            'slots_display',
-            __('Display Options', 'slots'),
-            array($this, 'display_section_callback'),
-            'slots-settings'
-        );
+
         
-        // Custom CSS Section
-        add_settings_section(
-            'slots_custom_css',
-            __('Custom CSS', 'slots'),
-            array($this, 'custom_css_section_callback'),
-            'slots-settings'
-        );
+
         
         // Slot Editor Section
         add_settings_section(
             'slots_editor',
-            __('Slot Editor Markup', 'slots'),
+            __('Single Slot Page Markup', 'slots'),
             array($this, 'editor_section_callback'),
             'slots-settings'
         );
         
+        // Slot Card Template Section
+        add_settings_section(
+            'slots_card_template',
+            __('Slot Card Template', 'slots'),
+            array($this, 'card_template_section_callback'),
+            'slots-settings'
+        );
+        
+
+        
         // General Settings Fields
         add_settings_field(
-            'enable_feature',
-            __('Enable Feature', 'slots'),
+            'enable_data_sync',
+            __('Enable Data Sync', 'slots'),
             array($this, 'checkbox_field_callback'),
             'slots-settings',
             'slots_general',
-            array('label_for' => 'enable_feature')
+            array('label_for' => 'enable_data_sync')
+        );
+        
+        add_settings_field(
+            'api_url',
+            __('API Route Example URL', 'slots'),
+            array($this, 'text_field_callback'),
+            'slots-settings',
+            'slots_general',
+            array('label_for' => 'api_url')
+        );
+        
+        add_settings_field(
+            'sync_data_button',
+            __('Sync Data', 'slots'),
+            array($this, 'button_field_callback'),
+            'slots-settings',
+            'slots_general',
+            array('label_for' => 'sync_data_button')
         );
         
         // Styling Settings Fields
@@ -173,70 +181,39 @@ class Slots_Admin {
         );
         
         add_settings_field(
-            'theme',
-            __('Theme', 'slots'),
-            array($this, 'theme_field_callback'),
+            'custom_theme_css',
+            __('Custom Theme CSS', 'slots'),
+            array($this, 'custom_theme_css_field_callback'),
             'slots-settings',
             'slots_styling',
-            array('label_for' => 'theme')
+            array('label_for' => 'custom_theme_css')
         );
         
-        // Custom CSS Field
-        add_settings_field(
-            'custom_css',
-            __('Custom CSS', 'slots'),
-            array($this, 'textarea_field_callback'),
-            'slots-settings',
-            'slots_custom_css',
-            array('label_for' => 'custom_css')
-        );
+
         
         // Slot Editor Markup Field
         add_settings_field(
             'slot_editor_markup',
-            __('Custom Slot Markup', 'slots'),
+            __('Single Slot Page Markup:', 'slots'),
             array($this, 'slot_editor_markup_field_callback'),
             'slots-settings',
             'slots_editor',
             array('label_for' => 'slot_editor_markup')
         );
         
-        // Additional Display Settings Fields
+        // Slot Card Template Field
         add_settings_field(
-            'default_columns',
-            __('Default Grid Columns', 'slots'),
-            array($this, 'select_field_callback'),
+            'slot_card_template',
+            __('Slot Card Template:', 'slots'),
+            array($this, 'slot_card_template_field_callback'),
             'slots-settings',
-            'slots_display',
-            array('label_for' => 'default_columns')
+            'slots_card_template',
+            array('label_for' => 'slot_card_template')
         );
         
-        add_settings_field(
-            'default_limit',
-            __('Default Slots Per Page', 'slots'),
-            array($this, 'number_field_callback'),
-            'slots-settings',
-            'slots_display',
-            array('label_for' => 'default_limit')
-        );
+
         
-        add_settings_field(
-            'show_filters_default',
-            __('Show Filters by Default', 'slots'),
-            array($this, 'checkbox_field_callback'),
-            'slots-settings',
-            'slots_display',
-            array('label_for' => 'show_filters_default')
-        );
-        
-        add_settings_field(
-            'show_pagination_default',
-            __('Show Pagination by Default', 'slots'),
-            array($this, 'checkbox_field_callback'),
-            'slots-settings',
-            'slots_display',
-            array('label_for' => 'show_pagination_default')
-        );
+
     }
     
     /**
@@ -250,34 +227,22 @@ class Slots_Admin {
      * Styling section callback
      */
     public function styling_section_callback() {
-        echo '<p>' . __('Customize the appearance of your slots display.', 'slots') . '</p>';
+        echo '<p>' . __('Customize the appearance of your slots display with colors, fonts, and custom CSS.', 'slots') . '</p>';
     }
     
-    /**
-     * Display section callback
-     */
-    public function display_section_callback() {
-        echo '<p>' . __('Configure how slots are displayed by default.', 'slots') . '</p>';
-    }
+
     
-    /**
-     * Custom CSS section callback
-     */
-    public function custom_css_section_callback() {
-        echo '<p>' . __('Add custom CSS to override default styles.', 'slots') . '</p>';
-    }
+
     
     /**
      * Editor section callback
      */
     public function editor_section_callback() {
-        echo '<p>' . __('Customize the markup for individual slot pages. Use the variables below to insert dynamic content.', 'slots') . '</p>';
+        echo '<p>' . __('Customize the markup for individual slot pages. When this field is filled out, all slot detail shortcodes will automatically use this custom template. If left empty, the default template will be used. Use the variables below to insert dynamic content.', 'slots') . '</p>';
         echo '<div class="slots-editor-help">';
         echo '<h4>' . __('Available Variables:', 'slots') . '</h4>';
         echo '<ul>';
                             echo '<li><code>{{slot_image}}</code> - Slot thumbnail image URL</li>';
-                    echo '<li><code>{{slot_title}}</code> - Slot title (text only)</li>';
-                    echo '<li><code>{{slot_provider}}</code> - Provider name (text only, if enabled)</li>';
                     echo '<li><code>{{slot_rating}}</code> - Star rating value (e.g., "4.5/5", if enabled)</li>';
                     echo '<li><code>{{slot_rtp}}</code> - RTP percentage (e.g., "96.5%", if enabled)</li>';
                     echo '<li><code>{{slot_wager}}</code> - Wager range (e.g., "$0.10 - $100", if enabled)</li>';
@@ -294,6 +259,37 @@ class Slots_Admin {
     }
     
     /**
+     * Card Template section callback
+     */
+    public function card_template_section_callback() {
+        echo '<p>' . __('Customize the markup for slot cards in grid view. When this field is filled out, all slot cards will automatically use this custom template. If left empty, the default template will be used. Use the variables below to insert dynamic content.', 'slots') . '</p>';
+        echo '<div class="slots-editor-help">';
+        echo '<h4>' . __('Available Variables:', 'slots') . '</h4>';
+        echo '<ul>';
+        echo '<li><code>{{slot_image}}</code> - Slot thumbnail image URL</li>';
+        echo '<li><code>{{slot_title}}</code> - Slot title (text only)</li>';
+        echo '<li><code>{{slot_provider}}</code> - Provider name (text only, if enabled)</li>';
+        echo '<li><code>{{slot_rating}}</code> - Star rating value (e.g., "4.5/5", if enabled)</li>';
+        echo '<li><code>{{slot_rtp}}</code> - RTP percentage (e.g., "96.5%", if enabled)</li>';
+        echo '<li><code>{{slot_wager}}</code> - Wager range (e.g., "$0.10 - $100", if enabled)</li>';
+        echo '<li><code>{{slot_id}}</code> - Slot ID (text only)</li>';
+        echo '<li><code>{{slot_excerpt}}</code> - Description/excerpt (formatted text, if enabled)</li>';
+        echo '<li><code>{{slot_permalink}}</code> - Slot permalink URL</li>';
+        echo '<li><code>{{star_rating}}</code> - Raw star rating HTML</li>';
+        echo '<li><code>{{rtp_value}}</code> - RTP value only (e.g., "96.5%")</li>';
+        echo '<li><code>{{wager_range}}</code> - Wager range value only (e.g., "$0.10 - $100")</li>';
+        echo '<li><code>{{provider_name}}</code> - Provider name only (text only)</li>';
+        echo '<li><code>{{slot_id_value}}</code> - Slot ID value only (text only)</li>';
+        echo '</ul>';
+        echo '</div>';
+    }
+    
+    /**
+     * Grid Editor section callback
+     */
+
+    
+    /**
      * Checkbox field callback
      */
     public function checkbox_field_callback($args) {
@@ -305,8 +301,8 @@ class Slots_Admin {
         echo '<input type="checkbox" id="' . esc_attr($field_name) . '" name="slots_settings[' . esc_attr($field_name) . ']" value="1" ' . checked(1, $value, false) . ' />';
         
         switch ($field_name) {
-            case 'enable_feature':
-                echo '<label for="' . esc_attr($field_name) . '">' . __('Enable this feature', 'slots') . '</label>';
+            case 'enable_data_sync':
+                echo '<label for="' . esc_attr($field_name) . '">' . __('Enable data sync', 'slots') . '</label>';
                 break;
                 
             case 'show_filters_default':
@@ -363,10 +359,7 @@ class Slots_Admin {
                 echo '<input type="number" id="' . esc_attr($field_name) . '" name="slots_settings[' . esc_attr($field_name) . ']" value="' . esc_attr($value) . '" min="0" max="20" step="1" /> px';
                 break;
                 
-            case 'default_limit':
-                echo '<input type="number" id="' . esc_attr($field_name) . '" name="slots_settings[' . esc_attr($field_name) . ']" value="' . esc_attr($value) . '" min="6" max="48" step="6" />';
-                echo '<p class="description">' . __('Default number of slots to display per page', 'slots') . '</p>';
-                break;
+
                 
             default:
                 echo '<input type="number" id="' . esc_attr($field_name) . '" name="slots_settings[' . esc_attr($field_name) . ']" value="' . esc_attr($value) . '" min="0" max="100" step="1" />';
@@ -406,6 +399,30 @@ class Slots_Admin {
     }
     
     /**
+     * Text field callback
+     */
+    public function text_field_callback($args) {
+        $options = get_option('slots_settings');
+        $value = isset($options[$args['label_for']]) ? $options[$args['label_for']] : '';
+        
+        echo '<input type="text" id="' . esc_attr($args['label_for']) . '" name="slots_settings[' . esc_attr($args['label_for']) . ']" value="' . esc_attr($value) . '" class="regular-text" />';
+        
+        if ($args['label_for'] === 'api_url') {
+            echo '<p class="description">' . __('Enter the API endpoint URL for data synchronization', 'slots') . '</p>';
+        }
+    }
+    
+    /**
+     * Button field callback
+     */
+    public function button_field_callback($args) {
+        if ($args['label_for'] === 'sync_data_button') {
+            echo '<button type="button" id="' . esc_attr($args['label_for']) . '" class="button button-secondary">' . __('Sync Data', 'slots') . '</button>';
+            echo '<p class="description">' . __('Click to manually synchronize data from the master site using WordPress queue or cron', 'slots') . '</p>';
+        }
+    }
+    
+    /**
      * Textarea field callback
      */
     public function textarea_field_callback($args) {
@@ -415,10 +432,8 @@ class Slots_Admin {
         echo '<textarea id="' . esc_attr($args['label_for']) . '" name="slots_settings[' . esc_attr($args['label_for']) . ']" rows="10" cols="50" class="large-text code">' . esc_textarea($value) . '</textarea>';
         
         if ($args['label_for'] === 'custom_css') {
-            echo '<p class="description">';
-            echo __('Add custom CSS to override default styles. You can use CSS variables like:', 'slots');
+            echo '<p class="description">' . __('Add custom CSS to override default styles. You can use CSS variables like:', 'slots') . '</p>';
             echo ' <code>{{primary_color}}</code>, <code>{{secondary_color}}</code>, <code>{{border_radius}}</code>';
-            echo '</p>';
         }
     }
     
@@ -428,6 +443,7 @@ class Slots_Admin {
     public function slot_editor_markup_field_callback($args) {
         $options = get_option('slots_settings');
         $value = isset($options[$args['label_for']]) ? $options[$args['label_for']] : '';
+        $override_checked = isset($options['slot_editor_override']) ? $options['slot_editor_override'] : 0;
         
         // Default markup example
                             $default_markup = '<div class="slot-detail-container">
@@ -454,55 +470,95 @@ class Slots_Admin {
             $value = $default_markup;
         }
         
+        // Show override checkbox
+        echo '<p><input type="checkbox" id="slot_editor_override" name="slots_settings[slot_editor_override]" value="1" ' . checked(1, $override_checked, false) . ' />';
+        echo '<label for="slot_editor_override">' . __('Override default template with custom markup', 'slots') . '</label></p>';
+        
         echo '<textarea id="' . esc_attr($args['label_for']) . '" name="slots_settings[' . esc_attr($args['label_for']) . ']" rows="15" cols="80" class="large-text code">' . esc_textarea($value) . '</textarea>';
         echo '<p class="description">' . __('Customize the HTML markup for individual slot pages. Use the variables listed above to insert dynamic content.', 'slots') . '</p>';
-        echo '<p class="description"><strong>' . __('Note:', 'slots') . '</strong> ' . __('This template will be used when the "editor" template is selected in shortcodes or when using [slot_detail template="editor"].', 'slots') . '</p>';
+        echo '<p class="description"><strong>' . __('Note:', 'slots') . '</strong> ' . __('To use this custom template, both the override checkbox must be checked AND this field must contain markup. If unchecked or empty, the default template will be used.', 'slots') . '</p>';
     }
     
     /**
-     * Theme field callback
+     * Slot Card Template field callback
      */
-    public function theme_field_callback($args) {
+    public function slot_card_template_field_callback($args) {
         $options = get_option('slots_settings');
-        $field_id = $args['label_for'];
-        $value = isset($options[$field_id]) ? $options[$field_id] : 'default';
+        $value = isset($options[$args['label_for']]) ? $options[$args['label_for']] : '';
+        $override_checked = isset($options['slot_card_template_override']) ? $options['slot_card_template_override'] : 0;
         
-        $themes = new Slots_Themes();
-        $available_themes = $themes->get_themes();
+        // Default slot card markup example
+        $default_markup = '<div class="slot-card" data-slot-id="{{slot_id}}">
+    <div class="slot-card-image-container">
+        <img src="{{slot_image}}" alt="{{slot_title}}" class="slot-card-image" loading="lazy">
+        {{star_rating}}
+    </div>
+    <div class="slot-card-content">
+        <h3 class="slot-card-title">
+            <a href="{{slot_permalink}}" title="{{slot_title}}">{{slot_title}}</a>
+        </h3>
+        {{slot_provider}}
+        <div class="slot-card-meta">
+            {{slot_rating}}
+            {{slot_rtp}}
+        </div>
+        {{slot_wager}}
+        {{slot_excerpt}}
+        <div class="slot-card-actions">
+            <a href="{{slot_permalink}}" class="slot-card-button">More Info</a>
+        </div>
+    </div>
+</div>';
         
-        echo '<select id="' . esc_attr($field_id) . '" name="slots_settings[' . esc_attr($field_id) . ']">';
-        
-        foreach ($available_themes as $theme_key => $theme) {
-            $selected = selected($value, $theme_key, false);
-            echo '<option value="' . esc_attr($theme_key) . '" ' . $selected . '>';
-            echo esc_html($theme['name']);
-            echo '</option>';
+        if (empty($value)) {
+            $value = $default_markup;
         }
         
-        echo '</select>';
+        // Show override checkbox
+        echo '<p><input type="checkbox" id="slot_card_template_override" name="slots_settings[slot_card_template_override]" value="1" ' . checked(1, $override_checked, false) . ' />';
+        echo '<label for="slot_card_template_override">' . __('Override default template with custom markup', 'slots') . '</label></p>';
         
-        // Show theme descriptions
-        echo '<div class="theme-descriptions" style="margin-top: 10px;">';
-        foreach ($available_themes as $theme_key => $theme) {
-            $display = ($value === $theme_key) ? 'block' : 'none';
-            echo '<div class="theme-description" id="theme-desc-' . esc_attr($theme_key) . '" style="display: ' . $display . '; padding: 8px; background: #f9f9f9; border-left: 3px solid #0073aa; margin-top: 5px;">';
-            echo '<strong>' . esc_html($theme['name']) . ':</strong> ' . esc_html($theme['description']);
-            echo '</div>';
+        echo '<textarea id="' . esc_attr($args['label_for']) . '" name="slots_settings[' . esc_attr($args['label_for']) . ']" rows="15" cols="80" class="large-text code">' . esc_textarea($value) . '</textarea>';
+        echo '<p class="description">' . __('Customize the HTML markup for slot cards in grid view. Use the variables listed above to insert dynamic content.', 'slots') . '</p>';
+        echo '<p class="description"><strong>' . __('Note:', 'slots') . '</strong> ' . __('To use this custom template, both the override checkbox must be checked AND this field must contain markup. If unchecked or empty, the default template will be used.', 'slots') . '</p>';
+    }
+    
+
+    
+    /**
+     * Custom Theme CSS field callback
+     */
+    public function custom_theme_css_field_callback($args) {
+        $options = get_option('slots_settings');
+        $value = isset($options[$args['label_for']]) ? $options[$args['label_for']] : '';
+        
+        // Default custom theme CSS example
+        $default_css = '/* Custom Theme CSS for Slots */
+.slots-grid {
+    /* Add your custom styles here */
+}
+
+.slot-card {
+    /* Customize slot card appearance */
+}
+
+.slot-card:hover {
+    /* Hover effects */
+}
+
+/* You can use CSS variables for dynamic values:
+   --primary-color: {{primary_color}};
+   --secondary-color: {{secondary_color}};
+   --border-radius: {{border_radius}}px;
+*/';
+        
+        if (empty($value)) {
+            $value = $default_css;
         }
-        echo '</div>';
         
-        echo '<p class="description">' . __('Choose a theme for your slots display. Each theme provides different visual styles.', 'slots') . '</p>';
-        
-        // Add JavaScript to show/hide descriptions
-        echo '<script>
-        jQuery(document).ready(function($) {
-            $("#theme").on("change", function() {
-                var selectedTheme = $(this).val();
-                $(".theme-description").hide();
-                $("#theme-desc-" + selectedTheme).show();
-            });
-        });
-        </script>';
+        echo '<textarea id="' . esc_attr($args['label_for']) . '" name="slots_settings[' . esc_attr($args['label_for']) . ']" rows="15" cols="80" class="large-text code">' . esc_textarea($value) . '</textarea>';
+        echo '<p class="description">' . __('Add your custom CSS to create a unique theme for your slots display. This CSS will override the default styles.', 'slots') . '</p>';
+        echo '<p class="description"><strong>' . __('Note:', 'slots') . '</strong> ' . __('You can use CSS variables like <code>{{primary_color}}</code>, <code>{{secondary_color}}</code>, and <code>{{border_radius}}</code> to reference your color settings.', 'slots') . '</p>';
     }
     
     /**
@@ -743,7 +799,215 @@ class Slots_Admin {
         
         return false;
     }
-
+    
+    /**
+     * Process slot card template with variables
+     */
+    public static function process_slot_card_template($template, $slot_data) {
+        if (empty($template)) {
+            return false;
+        }
+        
+        // Prepare variables for replacement
+        $variables = array(
+            '{{slot_image}}' => !empty($slot_data['thumbnail']) ? $slot_data['thumbnail'] : SLOTS_PLUGIN_URL . 'assets/images/default-slot.svg',
+            '{{slot_title}}' => !empty($slot_data['title']) ? esc_html($slot_data['title']) : '',
+            '{{slot_provider}}' => !empty($slot_data['provider_name']) ? '<div class="slot-card-provider">' . esc_html($slot_data['provider_name']) . '</div>' : '',
+            '{{slot_rating}}' => !empty($slot_data['star_rating']) ? '<div class="slot-card-rating"><span class="rating-value">' . number_format($slot_data['star_rating'], 1) . '</span></div>' : '',
+            '{{slot_rtp}}' => !empty($slot_data['rtp']) ? '<div class="slot-card-rtp">RTP: ' . number_format($slot_data['rtp'], 1) . '%</div>' : '',
+            '{{slot_wager}}' => self::format_wager_display($slot_data),
+            '{{slot_id}}' => !empty($slot_data['slot_id']) ? esc_attr($slot_data['slot_id']) : '',
+            '{{slot_excerpt}}' => !empty($slot_data['excerpt']) ? '<div class="slot-card-excerpt">' . wp_trim_words($slot_data['excerpt'], 15, '...') . '</div>' : '',
+            '{{slot_permalink}}' => !empty($slot_data['permalink']) ? esc_url($slot_data['permalink']) : '',
+            '{{star_rating}}' => !empty($slot_data['star_rating']) ? self::generate_star_rating_html($slot_data['star_rating']) : '',
+            '{{rtp_value}}' => !empty($slot_data['rtp']) ? number_format($slot_data['rtp'], 1) . '%' : 'N/A',
+            '{{wager_range}}' => self::format_wager_display($slot_data, false),
+            '{{provider_name}}' => !empty($slot_data['provider_name']) ? esc_html($slot_data['provider_name']) : '',
+            '{{slot_id_value}}' => !empty($slot_data['slot_id']) ? esc_html($slot_data['slot_id']) : ''
+        );
+        
+        // Replace variables in template
+        $processed_template = str_replace(array_keys($variables), array_values($variables), $template);
+        
+        return $processed_template;
+    }
+    
+    /**
+     * Format wager display
+     */
+    private static function format_wager_display($slot_data, $with_wrapper = true) {
+        $wager_display = '';
+        
+        if (!empty($slot_data['min_wager']) && !empty($slot_data['max_wager'])) {
+            $wager_display = '$' . number_format($slot_data['min_wager'], 2) . ' - $' . number_format($slot_data['max_wager'], 2);
+        } elseif (!empty($slot_data['min_wager'])) {
+            $wager_display = '$' . number_format($slot_data['min_wager'], 2) . '+';
+        } elseif (!empty($slot_data['max_wager'])) {
+            $wager_display = 'Up to $' . number_format($slot_data['max_wager'], 2);
+        }
+        
+        if (empty($wager_display)) {
+            return '';
+        }
+        
+        if ($with_wrapper) {
+            return '<div class="slot-card-wager"><span class="wager-label">' . __('Wager:', 'slots') . '</span><span class="wager-value">' . esc_html($wager_display) . '</span></div>';
+        }
+        
+        return $wager_display;
+    }
+    
+    /**
+     * Generate star rating HTML
+     */
+    private static function generate_star_rating_html($rating) {
+        if (empty($rating)) {
+            return '';
+        }
+        
+        $full_stars = floor($rating);
+        $half_star = ($rating - $full_stars) >= 0.5;
+        $empty_stars = 5 - $full_stars - ($half_star ? 1 : 0);
+        
+        $html = '<div class="slot-card-rating-overlay">';
+        
+        // Full stars
+        for ($i = 0; $i < $full_stars; $i++) {
+            $html .= '<span class="star full">★</span>';
+        }
+        
+        // Half star
+        if ($half_star) {
+            $html .= '<span class="star half">★</span>';
+        }
+        
+        // Empty stars
+        for ($i = 0; $i < $empty_stars; $i++) {
+            $html .= '<span class="star empty">☆</span>';
+        }
+        
+        $html .= '</div>';
+        
+                return $html;
+    }
+    
+    /**
+     * Render slot card using custom template or default
+     */
+    public static function render_slot_card($slot_data) {
+        $settings = get_option('slots_settings', array());
+        $custom_template = isset($settings['slot_card_template']) ? $settings['slot_card_template'] : '';
+        $override_enabled = isset($settings['slot_card_template_override']) ? $settings['slot_card_template_override'] : 0;
+        
+        if ($override_enabled && !empty($custom_template)) {
+            // Use custom template
+            $processed_template = self::process_slot_card_template($custom_template, $slot_data);
+            if ($processed_template) {
+                return $processed_template;
+            }
+        }
+        
+        // Fallback to default template
+        return self::render_default_slot_card($slot_data);
+    }
+    
+    /**
+     * Render default slot card (fallback)
+     */
+    private static function render_default_slot_card($slot_data) {
+        // Default image if no thumbnail
+        $default_image = SLOTS_PLUGIN_URL . 'assets/images/default-slot.svg';
+        $slot_image = !empty($slot_data['thumbnail']) ? $slot_data['thumbnail'] : $default_image;
+        
+        // Format RTP
+        $rtp_display = !empty($slot_data['rtp']) ? number_format($slot_data['rtp'], 1) . '%' : 'N/A';
+        
+        // Format wager range
+        $wager_display = self::format_wager_display($slot_data, false);
+        
+        // Generate star rating
+        $star_rating = self::generate_star_rating_html($slot_data['star_rating']);
+        
+        ob_start();
+        ?>
+        <div class="slot-card" data-slot-id="<?php echo esc_attr($slot_data['slot_id']); ?>">
+            
+            <!-- Slot Image -->
+            <div class="slot-card-image-container">
+                <img src="<?php echo esc_url($slot_image); ?>" 
+                     alt="<?php echo esc_attr($slot_data['title']); ?>" 
+                     class="slot-card-image"
+                     loading="lazy">
+                
+                <?php if (!empty($slot_data['star_rating'])): ?>
+                <div class="slot-card-rating-overlay">
+                    <?php echo $star_rating; ?>
+                </div>
+                <?php endif; ?>
+            </div>
+            
+            <!-- Slot Content -->
+            <div class="slot-card-content">
+                
+                <!-- Title -->
+                <h3 class="slot-card-title">
+                    <a href="<?php echo esc_url($slot_data['permalink']); ?>" title="<?php echo esc_attr($slot_data['title']); ?>">
+                        <?php echo esc_html($slot_data['title']); ?>
+                    </a>
+                </h3>
+                
+                <!-- Provider -->
+                <?php if (!empty($slot_data['provider_name'])): ?>
+                <div class="slot-card-provider">
+                    <?php echo esc_html($slot_data['provider_name']); ?>
+                </div>
+                <?php endif; ?>
+                
+                <!-- Rating and RTP -->
+                <div class="slot-card-meta">
+                    <?php if (!empty($slot_data['star_rating'])): ?>
+                    <div class="slot-card-rating">
+                        <?php echo $star_rating; ?>
+                        <span class="rating-value"><?php echo number_format($slot_data['star_rating'], 1); ?></span>
+                    </div>
+                    <?php endif; ?>
+                    
+                    <?php if (!empty($slot_data['rtp'])): ?>
+                    <div class="slot-card-rtp">
+                        RTP: <?php echo $rtp_display; ?>
+                    </div>
+                    <?php endif; ?>
+                </div>
+                
+                <!-- Wager Range -->
+                <?php if (!empty($wager_display)): ?>
+                <div class="slot-card-wager">
+                    <span class="wager-label"><?php _e('Wager:', 'slots'); ?></span>
+                    <span class="wager-value"><?php echo esc_html($wager_display); ?></span>
+                </div>
+                <?php endif; ?>
+                
+                <!-- Excerpt -->
+                <?php if (!empty($slot_data['excerpt'])): ?>
+                <div class="slot-card-excerpt">
+                    <?php echo wp_trim_words($slot_data['excerpt'], 15, '...'); ?>
+                </div>
+                <?php endif; ?>
+                
+                <!-- Action Button -->
+                <div class="slot-card-actions">
+                    <a href="<?php echo esc_url($slot_data['permalink']); ?>" class="slot-card-button">
+                        <?php _e('More Info', 'slots'); ?>
+                    </a>
+                </div>
+                
+            </div>
+            
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+    
     /**
      * Demo page
      */

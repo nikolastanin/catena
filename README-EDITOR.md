@@ -1,115 +1,177 @@
 # Slot Editor Template
 
-The Slot Editor Template allows editors to customize the markup for individual slot pages through the WordPress admin settings. **All variables return raw values (not HTML-wrapped content), giving you complete control over the HTML structure and styling.**
+The Slot Editor Template allows you to customize the HTML markup for individual slot pages through the WordPress admin interface.
 
-## Features
+## Overview
 
-- **Custom Markup**: Define your own HTML structure for slot detail pages
-- **Variable Replacement**: Use placeholders that get replaced with actual slot data
-- **Admin Interface**: Easy-to-use textarea in the Slots Settings page
-- **Fallback Support**: Default markup provided if no custom markup is set
+When you fill out the "Custom Slot Markup" field in the admin settings (Slots > Settings > Slot Editor Markup), all `[slot_detail]` shortcodes automatically use this custom template. If the field is left empty, the default template is used.
 
 ## Usage
 
-### 1. Access Settings
-
-Go to **Slots-Settings** in your WordPress admin menu.
-
-### 2. Configure Markup
-
-In the **Slot Editor Markup** section, enter your custom HTML markup using the available variables.
-
-### 3. Use the Template
-
-Use the shortcode with the `editor` template:
-
+### Basic Shortcode
 ```php
-[slot_detail template="editor" show_rating="true" show_description="true"]
+[slot_detail id="123" show_rating="true" show_description="true"]
 ```
+
+**Note**: No template parameter is needed - the template is automatically selected based on your admin settings.
+
+### Available Attributes
+- `id` - Slot ID (required)
+- `show_rating` - Show/hide star rating (true/false)
+- `show_description` - Show/hide description (true/false)
+- `show_provider` - Show/hide provider name (true/false)
+- `show_rtp` - Show/hide RTP information (true/false)
+- `show_wager` - Show/hide wager range (true/false)
+- `class` - Additional CSS classes
+
+## Setting Up Custom Markup
+
+1. Go to **Slots > Settings** in your WordPress admin
+2. Navigate to the **Slot Editor Markup** section
+3. Fill out the "Custom Slot Markup" field with your HTML
+4. Use the available variables (see below) to insert dynamic content
+5. Save your changes
 
 ## Available Variables
 
-| Variable | Description | Example Output |
-|----------|-------------|----------------|
-| `{{slot_image}}` | Slot thumbnail image URL | `https://example.com/image.jpg` |
-| `{{slot_title}}` | Slot title (text only) | `Slot Name` |
-| `{{slot_provider}}` | Provider name (text only, if enabled) | `NetEnt` |
-| `{{slot_rating}}` | Star rating value (if enabled) | `4.5/5` |
-| `{{slot_rtp}}` | RTP percentage (if enabled) | `96.5%` |
-| `{{slot_wager}}` | Wager range (if enabled) | `$0.10 - $100.00` |
-| `{{slot_id}}` | Slot ID (text only) | `SLOT123` |
-| `{{slot_description}}` | Description/excerpt (formatted text, if enabled) | `This is the slot description...` |
-| `{{slot_permalink}}` | Slot permalink URL | `https://example.com/slot-name` |
-| `{{star_rating}}` | Raw star rating HTML | `<div class="star-rating">★★★★☆</div>` |
-| `{{rtp_value}}` | RTP value only | `96.5%` |
-| `{{wager_range}}` | Wager range value only | `$0.10 - $100.00` |
-| `{{provider_name}}` | Provider name only | `NetEnt` |
-| `{{slot_id_value}}` | Slot ID value only | `SLOT123` |
+Use these variables in your custom markup to insert dynamic content:
 
-## Example Markup
+- `{{slot_image}}` - Slot thumbnail image URL
+- `{{slot_title}}` - Slot title (text only)
+- `{{slot_provider}}` - Provider name
+- `{{slot_rtp}}` - RTP percentage
+- `{{slot_wager_min}}` - Minimum wager amount
+- `{{slot_wager_max}}` - Maximum wager amount
+- `{{slot_rating}}` - Star rating (HTML)
+- `{{slot_rating_value}}` - Rating value (number only)
+- `{{slot_description}}` - Slot description
+- `{{slot_features}}` - Slot features list
+- `{{slot_bonus_features}}` - Bonus features list
+- `{{slot_play_button}}` - Play button HTML
+- `{{slot_demo_button}}` - Demo button HTML
+- `{{slot_review_link}}` - Review link HTML
+
+## Example Custom Markup
 
 ```html
 <div class="custom-slot-layout">
-    <header class="slot-header">
-        {{slot_image}}
-        <div class="slot-info">
-            {{slot_title}}
-            <div class="slot-meta">
-                {{slot_provider}}
-                {{slot_rating}}
-            </div>
-        </div>
-    </header>
+    <div class="slot-header">
+        <img src="{{slot_image}}" alt="{{slot_title}}" class="slot-thumbnail">
+        <h1 class="slot-title">{{slot_title}}</h1>
+        <div class="slot-provider">by {{slot_provider}}</div>
+    </div>
     
-    <div class="slot-details">
-        <div class="detail-row">
+    <div class="slot-stats">
+        <div class="stat-item">
             <span class="label">RTP:</span>
-            {{slot_rtp}}
+            <span class="value">{{slot_rtp}}</span>
         </div>
-        <div class="detail-row">
-            <span class="label">Bet Range:</span>
-            {{slot_wager}}
+        <div class="stat-item">
+            <span class="label">Wager:</span>
+            <span class="value">{{slot_wager_min}} - {{slot_wager_max}}</span>
+        </div>
+        <div class="stat-item">
+            <span class="label">Rating:</span>
+            <span class="value">{{slot_rating}}</span>
         </div>
     </div>
     
-    {{slot_description}}
+    <div class="slot-description">
+        {{slot_description}}
+    </div>
     
     <div class="slot-actions">
-        <a href="{{slot_permalink}}" class="play-button">Play Now</a>
+        {{slot_play_button}}
+        {{slot_demo_button}}
     </div>
 </div>
 ```
 
-## Shortcode Attributes
+## Template Selection Logic
 
-The editor template respects all standard shortcode attributes:
+The system automatically selects the appropriate template:
 
-- `show_rating` - Show/hide rating (default: true)
-- `show_description` - Show/hide description (default: true)
-- `show_provider` - Show/hide provider (default: true)
-- `show_rtp` - Show/hide RTP (default: true)
-- `show_wager` - Show/hide wager range (default: true)
+- **If Custom Slot Markup is filled**: Uses the editor template with your custom HTML
+- **If Custom Slot Markup is empty**: Uses the default template
 
-## Notes
+This means you don't need to specify a template in your shortcodes - the system handles it automatically based on your admin configuration.
 
-- Variables are only displayed if the corresponding data exists and the relevant shortcode attribute is enabled
-- The template automatically handles missing data gracefully
-- Custom CSS can be added in the Custom CSS section to style your custom markup
-- Changes to the markup take effect immediately after saving
+## Best Practices
+
+1. **Test your markup**: Always test your custom markup to ensure it displays correctly
+2. **Use CSS classes**: Add custom CSS classes to style your layout
+3. **Keep it simple**: Start with a basic layout and add complexity gradually
+4. **Mobile responsive**: Ensure your custom markup works on mobile devices
+5. **Performance**: Avoid complex HTML structures that might impact page load times
 
 ## Troubleshooting
 
-**Template not working?**
-- Ensure you're using `template="editor"` in your shortcode
-- Check that the markup is saved in the admin settings
-- Verify that the variables are spelled correctly (including double braces)
+### Template Not Working
+- Ensure the Custom Slot Markup field is filled out in admin settings
+- Check that your HTML is valid
+- Verify that the slot ID exists
 
-**Variables not showing?**
-- Check if the slot has the required data
-- Verify that the corresponding shortcode attributes are enabled
-- Ensure the variable names match exactly (case-sensitive)
+### Variables Not Replacing
+- Make sure variable names are exactly as shown (case-sensitive)
+- Check that the slot has the required data
+- Verify the shortcode is properly formatted
 
-**Styling issues?**
-- Add custom CSS in the Custom CSS section
-- Use the browser inspector to debug layout issues
-- Check that your markup follows proper HTML structure
+### Styling Issues
+- Add custom CSS to your theme
+- Use the `class` attribute in your shortcode for additional styling
+- Check for CSS conflicts with your theme
+
+## Advanced Usage
+
+### Conditional Display
+You can use PHP-like logic in your markup:
+
+```html
+<div class="slot-info">
+    {{slot_title}}
+    {{slot_provider}}
+    
+    <!-- Only show rating if it exists -->
+    <div class="rating-section" style="display: {{slot_rating_value > 0 ? 'block' : 'none'}}">
+        {{slot_rating}}
+    </div>
+</div>
+```
+
+### Custom CSS Integration
+Add custom CSS to your theme's stylesheet:
+
+```css
+.custom-slot-layout {
+    background: #f5f5f5;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.slot-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.slot-stats {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+}
+
+.slot-actions {
+    text-align: center;
+    margin-top: 20px;
+}
+```
+
+## Support
+
+For additional help with the Slot Editor Template:
+
+1. Check the main plugin documentation
+2. Review the template system README
+3. Test with different slot data
+4. Use browser developer tools to debug HTML/CSS issues
+
+Remember: The editor template respects all standard shortcode attributes, so you can still control which elements are displayed using the `show_*` parameters.

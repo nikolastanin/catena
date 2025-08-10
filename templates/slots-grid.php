@@ -57,7 +57,7 @@ $theme_class = !empty($theme_class) ? ' ' . $theme_class : '';
     <?php else: ?>
         <div class="slots-grid" id="slots-grid" data-nonce="<?php echo wp_create_nonce('slots_nonce'); ?>">
             <?php foreach ($slots as $slot): ?>
-                <?php include SLOTS_PLUGIN_DIR . 'templates/slot-card.php'; ?>
+                <?php echo Slots_Admin::render_slot_card($slot); ?>
             <?php endforeach; ?>
         </div>
         

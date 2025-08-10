@@ -37,29 +37,32 @@ class Slots_Shortcodes {
             'sort' => 'recent', // recent, random
             'class' => '',
             'show_filters' => 'true',
-            'show_pagination' => 'true'
+            'show_pagination' => 'true',
+            'template' => 'auto' // auto, default, editor
         ), $atts, 'slots_grid');
         
         // Get slots based on parameters
         $slots = $this->get_slots_for_grid($atts);
         
+        // Determine which template to use
+        $template_file = $this->get_grid_template_file($atts, $slots);
+        
         // Start output buffering
         ob_start();
         
-        // Include the grid template
-        include SLOTS_PLUGIN_DIR . 'templates/slots-grid.php';
+        // Include the appropriate template
+        include $template_file;
         
         return ob_get_clean();
     }
     
     /**
      * Slot Detail Shortcode
-     * Usage: [slot_detail id="123" template="minimal" show_rating="true" show_description="true"]
+     * Usage: [slot_detail id="123" show_rating="true" show_description="true"]
      */
     public function slot_detail_shortcode($atts) {
         $atts = shortcode_atts(array(
             'id' => '',
-            'template' => 'default',
             'show_rating' => 'true',
             'show_description' => 'true',
             'show_provider' => 'true',
@@ -80,12 +83,20 @@ class Slots_Shortcodes {
             return '<div class="slots-error">' . __('Slot not found.', 'slots') . '</div>';
         }
         
+        // Determine which template to use based on Custom Slot Markup setting
+        $settings = get_option('slots_settings', array());
+        $custom_markup = !empty($settings['slot_editor_markup']) ? $settings['slot_editor_markup'] : '';
+        $override_enabled = !empty($settings['slot_editor_override']) ? $settings['slot_editor_override'] : 0;
+        
+        // If override is enabled AND Custom Slot Markup is filled, use editor template, otherwise use default
+        $template_key = ($override_enabled && !empty($custom_markup)) ? 'editor' : 'default';
+        
         // Start output buffering
         ob_start();
         
         // Get template manager and load template
         $template_manager = new Slots_Template_Manager();
-        $template_key = $template_manager->validate_template_key($atts['template']);
+        $template_key = $template_manager->validate_template_key($template_key);
         $template_manager->load_template($template_key, $slot, $atts);
         
         return ob_get_clean();
@@ -193,6 +204,14 @@ class Slots_Shortcodes {
             'max_wager' => Slots_Admin::get_slot_meta($post_id, 'max_wager'),
             'modified' => get_the_modified_date('U', $post_id)
         );
+    }
+    
+    /**
+     * Determine which grid template file to use
+     */
+    private function get_grid_template_file($atts, $slots) {
+        // Always use the default grid template
+        return SLOTS_PLUGIN_DIR . 'templates/slots-grid.php';
     }
     
     /**

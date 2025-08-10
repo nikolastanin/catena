@@ -1,270 +1,275 @@
-# 🎰 Slots Plugin for WordPress
+# Slots Plugin - Grid Editor System
 
-A comprehensive slots management plugin for WordPress with Tailwind-inspired CSS, advanced filtering, and customizable styling.
+A WordPress plugin that provides a flexible and customizable slot grid editor with custom markup support, dynamic loading, and seamless theme integration.
 
-## ✨ Features
+## Features
 
-- **Custom Post Type**: Dedicated 'slot' post type for managing slot games
-- **Advanced Shortcodes**: `[slots_grid]` and `[slot_detail]` for flexible display
-- **Responsive Design**: Mobile-first, responsive grid layouts
-- **Tailwind-Inspired CSS**: Modern utility-first CSS framework
-- **Customizable Styling**: Admin panel for colors, fonts, and border radius
-- **Advanced Filtering**: Filter by provider, category, rating, and more
-- **AJAX Loading**: Load more slots without page refresh
-- **SEO Friendly**: Proper meta fields and structured data
-- **Developer Friendly**: Extensible architecture with hooks and filters
+### 🎯 Core Functionality
+- **Custom Post Type**: `slot` post type with comprehensive meta fields
+- **Flexible Grid System**: Multiple grid templates with customizable layouts
+- **Custom Markup Support**: Define your own HTML structure in admin settings
+- **Dynamic Loading**: AJAX-powered pagination and filtering without page reloads
+- **Responsive Design**: Automatically adapts to different screen sizes
+- **Theme Integration**: Seamlessly works with any WordPress theme
 
-## 🚀 Installation
+### 🔧 Grid Templates
+- **Default Grid** (`slots-grid.php`): Standard grid layout with filters and pagination
+
+- **Auto-detection**: Intelligently chooses template based on settings or shortcode attributes
+
+### 📱 Shortcode System
+- `[slots_grid]`: Main grid shortcode with extensive customization options
+- `[slot_detail]`: Individual slot detail display
+- Template selection via `template` attribute
+- Configurable limits, sorting, and display options
+
+## Installation
 
 1. Upload the `slots` folder to your `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Go to 'Slots-Settings' in the admin menu to configure styling options
-4. Use the shortcodes on any page or post to display slots
+3. Configure the plugin settings in 'Slots' → 'Settings'
 
-## 📖 Usage
-
-### Basic Grid Display
-
-```php
-[slots_grid]
-```
-
-### Advanced Grid with Filters
-
-```php
-[slots_grid limit="12" sort="recent" show_filters="true"]
-```
-
-### Individual Slot Display
-
-```php
-[slot_detail id="123" show_rating="true" show_description="true"]
-```
-
-### Shortcode Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `limit` | number | 12 | Maximum number of slots to display (1, 3, 6, 9, or 12) |
-| `sort` | string | recent | Sorting method (recent, random) |
-| `show_filters` | boolean | true | Show/hide filter controls |
-| `show_pagination` | boolean | true | Show/hide pagination controls |
-
-## 🎨 Customization
+## Configuration
 
 ### Admin Settings
+Navigate to **Slots → Settings** to configure:
 
-The plugin includes a comprehensive admin panel for customization:
+- **Grid Editor Markup**: Custom HTML template for slot cards
+- **Default Display Options**: Default limits, sorting, and pagination settings
+- **Custom Fields**: Configure which slot meta fields to display
 
-- **Primary Color**: Main color for buttons and highlights
-- **Secondary Color**: Secondary color for text and borders
-- **Accent Color**: Accent color for special elements
-- **Border Radius**: Border radius for cards and buttons
-- **Font Family**: Font family for slot cards and text
-- **Grid Columns**: Default number of columns in grid view
-- **Slots Per Page**: Default number of slots to display
-- **Custom CSS**: Add custom CSS with variable support
+### Grid Editor Markup
+The grid editor allows you to define custom HTML structure for slot cards. Use these placeholders:
 
-### CSS Variables
-
-The plugin provides CSS custom properties for easy theming:
-
-```css
-:root {
-    --slots-primary: #3b82f6;
-    --slots-secondary: #64748b;
-    --slots-accent: #f59e0b;
-    --slots-radius-md: 8px;
-    --slots-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
+```html
+<div class="custom-slot-card">
+    <h3>{slot_title}</h3>
+    <img src="{slot_image}" alt="{slot_title}">
+    <div class="slot-meta">
+        <span class="provider">{provider_name}</span>
+        <span class="rating">{star_rating}</span>
+        <span class="rtp">RTP: {rtp}%</span>
+    </div>
+    <a href="{slot_permalink}" class="play-button">Play Now</a>
+</div>
 ```
 
-### Custom CSS with Variables
+**Available Placeholders:**
+- `{slot_title}` - Slot title
+- `{slot_image}` - Slot thumbnail image
+- `{slot_permalink}` - Slot detail page URL
+- `{provider_name}` - Game provider name
+- `{star_rating}` - Star rating (1-5)
+- `{rtp}` - Return to Player percentage
+- `{min_wager}` - Minimum bet amount
+- `{max_wager}` - Maximum bet amount
+- `{slot_excerpt}` - Slot description excerpt
 
-You can use CSS variables in your custom CSS:
+## Usage
 
-```css
-.my-custom-slots .slot-card {
-    background: {{primary_color}};
-    border-radius: {{border_radius}};
-    font-family: {{font_family}};
-}
+### Basic Grid Display
+```php
+// Default grid with 12 slots
+echo do_shortcode('[slots_grid]');
+
+// Custom limit and sorting
+echo do_shortcode('[slots_grid limit="6" sort="random"]');
+
+// Force specific template
+echo do_shortcode('[slots_grid template="editor" limit="9"]');
 ```
 
-## 🏗️ Architecture
+### Shortcode Attributes
 
-### File Structure
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `limit` | integer | 12 | Number of slots to display |
+| `sort` | string | recent | Sorting method (recent, random) |
+| `template` | string | auto | Template to use (default, editor, auto) |
+| `show_filters` | boolean | true | Show filter controls |
+| `show_pagination` | boolean | true | Show pagination controls |
+
+### PHP Integration
+```php
+// Get slots data
+$slots = get_posts(array(
+    'post_type' => 'slot',
+    'posts_per_page' => 6,
+    'post_status' => 'publish'
+));
+
+// Include grid template
+
+```
+
+## File Structure
 
 ```
 slots/
-├── admin/
-│   ├── admin-page.php
-│   └── settings-page.php
+├── slots.php                          # Main plugin file
+├── README.md                          # This documentation
+├── includes/
+│   ├── class-slots-admin.php         # Admin functionality
+│   ├── class-slots-public.php        # Public-facing features
+│   ├── class-slots-shortcodes.php    # Shortcode handlers
+│   └── class-slots-template-manager.php # Template management
+├── templates/
+│   ├── slots-grid.php                # Default grid template
+
+│   └── slot-card.php                 # Individual slot card
 ├── assets/
 │   ├── css/
-│   │   ├── slots-public.css
-│   │   └── slots-admin.css
-│   ├── js/
-│   │   ├── slots-public.js
-│   │   └── slots-admin.js
-│   └── images/
-├── includes/
-│   ├── class-slots.php
-│   ├── class-slots-admin.php
-│   ├── class-slots-public.php
-│   ├── class-slots-post-types.php
-│   └── class-slots-shortcodes.php
-├── templates/
-│   ├── slots-grid.php
-│   ├── slot-card.php
-│   ├── slot-detail.php
-│   └── demo-page.php
-├── slots.php
-└── README.md
+│   │   └── slots-public.css         # Public styles
+│   └── js/
+│       └── slots-public.js          # Public JavaScript
+└── languages/                        # Translation files
 ```
 
-### Classes
-
-- **`Slots`**: Main plugin class
-- **`Slots_Admin`**: Admin functionality and settings
-- **`Slots_Public`**: Public-facing functionality and assets
-- **`Slots_Post_Types`**: Custom post type registration
-- **`Slots_Shortcodes`**: Shortcode handling and templates
-
-## 🔧 Development
-
-### Hooks and Filters
-
-The plugin provides several hooks for customization:
-
-```php
-// Modify slot data before display
-add_filter('slots_slot_data', function($slot_data, $post_id) {
-    // Customize slot data
-    return $slot_data;
-}, 10, 2);
-
-// Modify grid query arguments
-add_filter('slots_grid_query_args', function($args, $atts) {
-    // Customize query arguments
-    return $args;
-}, 10, 2);
-```
+## Customization
 
 ### Adding Custom Fields
-
-To add custom fields to slots:
+Extend the slot meta fields by adding to the `slot` post type:
 
 ```php
-add_action('add_meta_boxes', function() {
-    add_meta_box(
-        'custom_slot_field',
-        'Custom Field',
-        'custom_field_callback',
-        'slot',
-        'normal',
-        'high'
-    );
+// Add custom meta field
+add_post_meta_box('custom_field', 'Custom Field', 'slot');
+
+// Display in template
+$custom_value = get_post_meta($slot_id, 'custom_field', true);
+```
+
+### Custom CSS
+Override default styles by adding CSS to your theme:
+
+```css
+/* Custom slot card styling */
+.slot-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* Custom grid layout */
+.slots-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+```
+
+### JavaScript Extensions
+Extend the grid functionality with custom JavaScript:
+
+```javascript
+// Custom slot card click handler
+jQuery(document).on('click', '.slot-card', function() {
+    var slotId = jQuery(this).data('slot-id');
+    // Custom functionality
+});
+
+// Extend sorting options
+jQuery(document).on('change', '.slots-sort-select', function() {
+    var sort = jQuery(this).val();
+    // Custom sorting logic
 });
 ```
 
-## 📱 Responsive Design
+## AJAX Endpoints
 
-The plugin is built with mobile-first responsive design:
+### Load Slots Grid
+**Action**: `load_slots_grid`
+**Parameters**:
+- `page`: Page number (integer)
+- `limit`: Slots per page (integer)
+- `sort`: Sorting method (string)
+- `nonce`: Security nonce (string)
 
-- **Mobile**: Single column layout with optimized touch targets
-- **Tablet**: 2-3 column grid layout
-- **Desktop**: 3-5 column grid layout with hover effects
+**Response**:
+```json
+{
+    "success": true,
+    "data": {
+        "html": "Generated HTML content",
+        "has_more": true
+    }
+}
+```
 
-## 🎯 Browser Support
+## Hooks and Filters
+
+### Actions
+- `slots_before_grid_display` - Before grid rendering
+- `slots_after_grid_display` - After grid rendering
+- `slots_before_slot_card` - Before individual slot card
+- `slots_after_slot_card` - After individual slot card
+
+### Filters
+- `slots_grid_query_args` - Modify grid query arguments
+- `slots_card_data` - Modify slot card data before rendering
+- `slots_grid_template_file` - Override template file selection
+
+## Troubleshooting
+
+### Common Issues
+
+**Grid not displaying slots:**
+- Check if slots exist in the `slot` post type
+- Verify shortcode syntax
+- Check browser console for JavaScript errors
+
+**Custom markup not working:**
+- Ensure markup is saved in admin settings
+- Check placeholder syntax
+- Verify template is set to "editor"
+
+**AJAX loading not working:**
+- Check nonce verification
+- Verify AJAX action is registered
+- Check browser network tab for errors
+
+### Debug Mode
+Enable debug mode in WordPress to see detailed error messages:
+
+```php
+// In wp-config.php
+define('WP_DEBUG', true);
+define('WP_DEBUG_LOG', true);
+```
+
+## Performance Tips
+
+1. **Use appropriate limits**: Don't load too many slots at once
+2. **Enable caching**: Use WordPress caching plugins
+3. **Optimize images**: Compress slot thumbnails
+4. **Lazy loading**: Images are automatically lazy-loaded
+5. **Minimize AJAX calls**: Use reasonable pagination limits
+
+## Browser Support
 
 - Chrome 60+
 - Firefox 55+
 - Safari 12+
 - Edge 79+
+- Internet Explorer 11+ (with polyfills)
 
-## 📄 License
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
 
 This plugin is licensed under the GPL v2 or later.
 
-## 🤝 Support
+## Support
 
-For support and feature requests, please create an issue in the plugin repository.
-
-## 🔄 Changelog
-
-### Version 1.0.0
-- Initial release
-- Custom post type for slots
-- Grid and detail shortcodes
-- Admin settings panel
-- Responsive design
-- Tailwind-inspired CSS
-- AJAX loading
-- Advanced filtering
-
-## 📚 Examples
-
-### Basic Implementation
-
-1. **Add a slot game**:
-   - Go to Posts → Add New
-   - Select "Slot" post type
-   - Fill in slot details (title, description, featured image)
-   - Add custom fields (provider, rating, RTP, wager limits)
-   - Publish
-
-2. **Display on a page**:
-   - Create a new page
-   - Add shortcode: `[slots_grid limit="6" sort="rating"]`
-   - Publish and view
-
-3. **Customize styling**:
-   - Go to Slots-Settings in admin
-   - Adjust colors, fonts, and border radius
-   - Add custom CSS if needed
-   - Save changes
-
-### Advanced Usage
-
-```php
-// Display slots from specific provider with custom styling
-[slots_grid 
-    limit="8" 
-    sort="rtp" 
-    provider="Microgaming" 
-    rating="4.5" 
-    class="premium-slots"
-    show_filters="true"
-]
-
-// Display individual slot with specific options
-[slot_detail 
-    id="456" 
-    show_rating="true" 
-    show_description="true" 
-    show_provider="true"
-    class="featured-slot"
-]
-```
-
-## 🎨 Theme Integration
-
-The plugin is designed to work with any WordPress theme. It includes:
-
-- **CSS Reset**: Minimal CSS reset for consistent styling
-- **Theme Compatibility**: Works with default WordPress themes
-- **Custom Classes**: Easy to override with theme CSS
-- **Responsive Breakpoints**: Standard breakpoints for theme integration
-
-## 🚀 Performance
-
-- **Lazy Loading**: Images load as needed
-- **AJAX Pagination**: Load more content without page refresh
-- **Optimized Queries**: Efficient database queries
-- **Minified Assets**: Compressed CSS and JavaScript
-- **Caching Ready**: Compatible with caching plugins
+For support and feature requests, please create an issue in the repository or contact the development team.
 
 ---
 
-**Built with ❤️ for the WordPress community**
+**Version**: 1.0.0  
+**Last Updated**: December 2024  
+**WordPress Version**: 5.0+  
+**PHP Version**: 7.4+

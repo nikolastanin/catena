@@ -48,9 +48,10 @@ $show_wager = filter_var($atts['show_wager'], FILTER_VALIDATE_BOOLEAN);
 
 // Get custom markup from settings
 $custom_markup = !empty($settings['slot_editor_markup']) ? $settings['slot_editor_markup'] : '';
+$override_enabled = !empty($settings['slot_editor_override']) ? $settings['slot_editor_override'] : 0;
 
-// If no custom markup is set, use default fallback
-if (empty($custom_markup)) {
+// If no custom markup is set or override is disabled, use default fallback
+if (empty($custom_markup) || !$override_enabled) {
     $custom_markup = '<div class="slot-detail-container">
         <div class="slot-detail-header">
             <div class="slot-detail-image">
