@@ -7,99 +7,159 @@
 (function($) {
     'use strict';
 
-    // Slots Plugin Class
-    var SlotsPlugin = {
-
+    var Slots = {
+        /**
+         * Initialize
+         */
         init: function() {
             this.bindEvents();
-            this.initModals();
         },
 
+        /**
+         * Bind events
+         */
         bindEvents: function() {
-            // Load more slots
-            $(document).on('click', '.load-more-slots', function(e) {
-                e.preventDefault();
-                var page = $(this).data('page');
-                SlotsPlugin.loadMoreSlots(page);
-            });
+            $(document).on('change', '.slots-sort-select', this.handleSortChange);
+            $(document).on('change', '.slots-limit-select', this.handleLimitChange);
+            $(document).on('click', '.load-more-slots', this.handleLoadMore);
         },
 
-        initModals: function() {
-            // Initialize notification
-            this.notification = $('#slots-notification');
+        /**
+         * Handle sort change
+         */
+        handleSortChange: function() {
+            var select = $(this);
+            var container = select.closest('.slots-container');
+            var sort = select.val();
+            var limit = container.find('.slots-limit-select').val();
+
+            Slots.reloadSlots(container, { sort: sort, limit: limit });
         },
 
+        /**
+         * Handle limit change
+         */
+        handleLimitChange: function() {
+            var select = $(this);
+            var container = select.closest('.slots-container');
+            var limit = select.val();
+            var sort = container.find('.slots-sort-select').val();
 
+            // Update container data
+            container.data('limit', limit);
 
-        loadMoreSlots: function(page) {
-            var loadMoreBtn = $('.load-more-slots');
+            // Update load more button data
+            container.find('.load-more-slots').data('limit', limit).data('page', 1);
 
-            loadMoreBtn.prop('disabled', true).text('Loading...');
+            Slots.reloadSlots(container, { sort: sort, limit: limit });
+        },
 
+        /**
+         * Reload slots with new filters
+         */
+        reloadSlots: function(container, filters) {
+            var grid = container.find('.slots-grid');
+
+            // Show loading state
+            grid.html('<div class="slots-loading">Loading...</div>');
+
+            // Make AJAX request
             $.ajax({
-                url: slots_ajax.ajax_url,
+                url: '/wp-admin/admin-ajax.php',
                 type: 'POST',
                 data: {
-                    action: 'slots_action',
-                    action_type: 'get_slots',
-                    page: page + 1,
-                    nonce: slots_ajax.nonce
+                    action: 'load_more_slots',
+                    nonce: container.find('.slots-grid').data('nonce'),
+                    page: 1,
+                    limit: parseInt(filters.limit),
+                    sort: filters.sort
                 },
                 success: function(response) {
-                    if (response.success && response.data.length > 0) {
-                        SlotsPlugin.appendSlots(response.data);
-                        loadMoreBtn.data('page', page + 1);
+                    if (response.success) {
+                        grid.html(response.data.html);
+
+                        // Show/hide load more button
+                        var loadMoreBtn = container.find('.load-more-slots');
+                        if (response.data.has_more) {
+                            loadMoreBtn.show().data('page', 1);
+                        } else {
+                            loadMoreBtn.hide();
+                        }
                     } else {
-                        loadMoreBtn.hide();
+                        grid.html('<div class="slots-error">Error loading slots. Please try again.</div>');
                     }
                 },
                 error: function() {
-                    SlotsPlugin.showNotification('Failed to load more slots.', 'error');
-                },
-                complete: function() {
-                    loadMoreBtn.prop('disabled', false).text('Load More Slots');
+                    grid.html('<div class="slots-error">Error loading slots. Please try again.</div>');
                 }
             });
         },
 
-        appendSlots: function(slots) {
-            var slotsList = $('.slots-list');
+        /**
+         * Load more slots
+         */
+        loadMoreSlots: function(container, page, callback) {
+            var sort = container.find('.slots-sort-select').val();
+            var limit = parseInt(container.find('.slots-limit-select').val());
 
-            slots.forEach(function(slot) {
-                var slotHtml = SlotsPlugin.createSlotHtml(slot);
-                slotsList.append(slotHtml);
+            $.ajax({
+                url: '/wp-admin/admin-ajax.php',
+                type: 'POST',
+                data: {
+                    action: 'load_more_slots',
+                    nonce: container.find('.slots-grid').data('nonce'),
+                    page: page,
+                    limit: limit,
+                    sort: sort
+                },
+                success: function(response) {
+                    if (response.success) {
+                        container.find('.slots-grid').append(response.data.html);
+                        callback(response.data.has_more);
+                    } else {
+                        callback(false);
+                    }
+                },
+                error: function() {
+                    callback(false);
+                }
             });
         },
 
-        createSlotHtml: function(slot) {
-            return '<div class="slot-item" data-slot-id="' + slot.id + '">' +
-                '<div class="slot-time">' +
-                '<span class="time-label">Time:</span>' +
-                '<span class="time-value">' + slot.time + '</span>' +
-                '</div>' +
-                '</div>';
-        },
+        /**
+         * Handle load more
+         */
+        handleLoadMore: function(e) {
+            e.preventDefault();
 
-        showNotification: function(message, type) {
-            this.notification
-                .removeClass()
-                .addClass('slots-notification ' + type)
-                .text(message)
-                .show();
+            var button = $(this);
+            var container = button.closest('.slots-container');
+            var currentPage = parseInt(button.data('page'));
+            var nextPage = currentPage + 1;
 
-            // Auto-hide after 5 seconds
-            setTimeout(function() {
-                SlotsPlugin.notification.fadeOut();
-            }, 5000);
+            // Disable button and show loading
+            button.prop('disabled', true).text('Loading...');
+
+            // Load more slots
+            Slots.loadMoreSlots(container, nextPage, function(hasMore) {
+                button.data('page', nextPage);
+                button.prop('disabled', false);
+
+                if (!hasMore) {
+                    button.hide();
+                } else {
+                    button.text('Load More Slots');
+                }
+            });
         }
     };
 
-    // Initialize plugin when DOM is ready
+    // Initialize when document is ready
     $(document).ready(function() {
-        SlotsPlugin.init();
+        Slots.init();
     });
 
-    // Make plugin globally accessible
-    window.SlotsPlugin = SlotsPlugin;
+    // Make Slots available globally
+    window.Slots = Slots;
 
 })(jQuery);

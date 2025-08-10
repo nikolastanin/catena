@@ -44,6 +44,16 @@ class Slots_Admin {
             'dashicons-admin-generic',
             31
         );
+        
+        // Add demo page submenu
+        add_submenu_page(
+            'slots-settings',
+            __('Demo Page', 'slots'),
+            __('Demo Page', 'slots'),
+            'manage_options',
+            'slots-demo',
+            array($this, 'demo_page')
+        );
     }
     
     /**
@@ -66,6 +76,7 @@ class Slots_Admin {
     public function init_settings() {
         register_setting('slots_options', 'slots_settings');
         
+        // General Settings Section
         add_settings_section(
             'slots_general',
             __('General Settings', 'slots'),
@@ -73,13 +84,158 @@ class Slots_Admin {
             'slots-settings'
         );
         
+        // Styling Settings Section
+        add_settings_section(
+            'slots_styling',
+            __('Styling Options', 'slots'),
+            array($this, 'styling_section_callback'),
+            'slots-settings'
+        );
+        
+        // Display Settings Section
+        add_settings_section(
+            'slots_display',
+            __('Display Options', 'slots'),
+            array($this, 'display_section_callback'),
+            'slots-settings'
+        );
+        
+        // Custom CSS Section
+        add_settings_section(
+            'slots_custom_css',
+            __('Custom CSS', 'slots'),
+            array($this, 'custom_css_section_callback'),
+            'slots-settings'
+        );
+        
+        // Slot Editor Section
+        add_settings_section(
+            'slots_editor',
+            __('Slot Editor Markup', 'slots'),
+            array($this, 'editor_section_callback'),
+            'slots-settings'
+        );
+        
+        // General Settings Fields
         add_settings_field(
-            'slots_enable_feature',
+            'enable_feature',
             __('Enable Feature', 'slots'),
             array($this, 'checkbox_field_callback'),
             'slots-settings',
             'slots_general',
-            array('label_for' => 'slots_enable_feature')
+            array('label_for' => 'enable_feature')
+        );
+        
+        // Styling Settings Fields
+        add_settings_field(
+            'primary_color',
+            __('Primary Color', 'slots'),
+            array($this, 'color_field_callback'),
+            'slots-settings',
+            'slots_styling',
+            array('label_for' => 'primary_color')
+        );
+        
+        add_settings_field(
+            'secondary_color',
+            __('Secondary Color', 'slots'),
+            array($this, 'color_field_callback'),
+            'slots-settings',
+            'slots_styling',
+            array('label_for' => 'secondary_color')
+        );
+        
+        add_settings_field(
+            'accent_color',
+            __('Accent Color', 'slots'),
+            array($this, 'color_field_callback'),
+            'slots-settings',
+            'slots_styling',
+            array('label_for' => 'accent_color')
+        );
+        
+        add_settings_field(
+            'border_radius',
+            __('Border Radius', 'slots'),
+            array($this, 'number_field_callback'),
+            'slots-settings',
+            'slots_styling',
+            array('label_for' => 'border_radius')
+        );
+        
+        add_settings_field(
+            'font_family',
+            __('Font Family', 'slots'),
+            array($this, 'select_field_callback'),
+            'slots-settings',
+            'slots_styling',
+            array('label_for' => 'font_family')
+        );
+        
+        add_settings_field(
+            'theme',
+            __('Theme', 'slots'),
+            array($this, 'theme_field_callback'),
+            'slots-settings',
+            'slots_styling',
+            array('label_for' => 'theme')
+        );
+        
+        // Custom CSS Field
+        add_settings_field(
+            'custom_css',
+            __('Custom CSS', 'slots'),
+            array($this, 'textarea_field_callback'),
+            'slots-settings',
+            'slots_custom_css',
+            array('label_for' => 'custom_css')
+        );
+        
+        // Slot Editor Markup Field
+        add_settings_field(
+            'slot_editor_markup',
+            __('Custom Slot Markup', 'slots'),
+            array($this, 'slot_editor_markup_field_callback'),
+            'slots-settings',
+            'slots_editor',
+            array('label_for' => 'slot_editor_markup')
+        );
+        
+        // Additional Display Settings Fields
+        add_settings_field(
+            'default_columns',
+            __('Default Grid Columns', 'slots'),
+            array($this, 'select_field_callback'),
+            'slots-settings',
+            'slots_display',
+            array('label_for' => 'default_columns')
+        );
+        
+        add_settings_field(
+            'default_limit',
+            __('Default Slots Per Page', 'slots'),
+            array($this, 'number_field_callback'),
+            'slots-settings',
+            'slots_display',
+            array('label_for' => 'default_limit')
+        );
+        
+        add_settings_field(
+            'show_filters_default',
+            __('Show Filters by Default', 'slots'),
+            array($this, 'checkbox_field_callback'),
+            'slots-settings',
+            'slots_display',
+            array('label_for' => 'show_filters_default')
+        );
+        
+        add_settings_field(
+            'show_pagination_default',
+            __('Show Pagination by Default', 'slots'),
+            array($this, 'checkbox_field_callback'),
+            'slots-settings',
+            'slots_display',
+            array('label_for' => 'show_pagination_default')
         );
     }
     
@@ -91,14 +247,262 @@ class Slots_Admin {
     }
     
     /**
+     * Styling section callback
+     */
+    public function styling_section_callback() {
+        echo '<p>' . __('Customize the appearance of your slots display.', 'slots') . '</p>';
+    }
+    
+    /**
+     * Display section callback
+     */
+    public function display_section_callback() {
+        echo '<p>' . __('Configure how slots are displayed by default.', 'slots') . '</p>';
+    }
+    
+    /**
+     * Custom CSS section callback
+     */
+    public function custom_css_section_callback() {
+        echo '<p>' . __('Add custom CSS to override default styles.', 'slots') . '</p>';
+    }
+    
+    /**
+     * Editor section callback
+     */
+    public function editor_section_callback() {
+        echo '<p>' . __('Customize the markup for individual slot pages. Use the variables below to insert dynamic content.', 'slots') . '</p>';
+        echo '<div class="slots-editor-help">';
+        echo '<h4>' . __('Available Variables:', 'slots') . '</h4>';
+        echo '<ul>';
+                            echo '<li><code>{{slot_image}}</code> - Slot thumbnail image URL</li>';
+                    echo '<li><code>{{slot_title}}</code> - Slot title (text only)</li>';
+                    echo '<li><code>{{slot_provider}}</code> - Provider name (text only, if enabled)</li>';
+                    echo '<li><code>{{slot_rating}}</code> - Star rating value (e.g., "4.5/5", if enabled)</li>';
+                    echo '<li><code>{{slot_rtp}}</code> - RTP percentage (e.g., "96.5%", if enabled)</li>';
+                    echo '<li><code>{{slot_wager}}</code> - Wager range (e.g., "$0.10 - $100", if enabled)</li>';
+                    echo '<li><code>{{slot_id}}</code> - Slot ID (text only)</li>';
+                    echo '<li><code>{{slot_description}}</code> - Description/excerpt (formatted text, if enabled)</li>';
+                    echo '<li><code>{{slot_permalink}}</code> - Slot permalink URL</li>';
+                    echo '<li><code>{{star_rating}}</code> - Raw star rating HTML</li>';
+                    echo '<li><code>{{rtp_value}}</code> - RTP value only (e.g., "96.5%")</li>';
+                    echo '<li><code>{{wager_range}}</code> - Wager range value only (e.g., "$0.10 - $100")</li>';
+                    echo '<li><code>{{provider_name}}</code> - Provider name only (text only)</li>';
+                    echo '<li><code>{{slot_id_value}}</code> - Slot ID value only (text only)</li>';
+        echo '</ul>';
+        echo '</div>';
+    }
+    
+    /**
      * Checkbox field callback
      */
     public function checkbox_field_callback($args) {
         $options = get_option('slots_settings');
         $value = isset($options[$args['label_for']]) ? $options[$args['label_for']] : 0;
         
-        echo '<input type="checkbox" id="' . esc_attr($args['label_for']) . '" name="slots_settings[' . esc_attr($args['label_for']) . ']" value="1" ' . checked(1, $value, false) . ' />';
-        echo '<label for="' . esc_attr($args['label_for']) . '">' . __('Enable this feature', 'slots') . '</label>';
+        $field_name = $args['label_for'];
+        
+        echo '<input type="checkbox" id="' . esc_attr($field_name) . '" name="slots_settings[' . esc_attr($field_name) . ']" value="1" ' . checked(1, $value, false) . ' />';
+        
+        switch ($field_name) {
+            case 'enable_feature':
+                echo '<label for="' . esc_attr($field_name) . '">' . __('Enable this feature', 'slots') . '</label>';
+                break;
+                
+            case 'show_filters_default':
+                echo '<label for="' . esc_attr($field_name) . '">' . __('Show filter controls by default in grid view', 'slots') . '</label>';
+                break;
+                
+            case 'show_pagination_default':
+                echo '<label for="' . esc_attr($field_name) . '">' . __('Show pagination controls by default', 'slots') . '</label>';
+                break;
+                
+            default:
+                echo '<label for="' . esc_attr($field_name) . '">' . __('Enable this feature', 'slots') . '</label>';
+                break;
+        }
+    }
+    
+    /**
+     * Color field callback
+     */
+    public function color_field_callback($args) {
+        $options = get_option('slots_settings');
+        $value = isset($options[$args['label_for']]) ? $options[$args['label_for']] : '';
+        
+        $field_name = $args['label_for'];
+        
+        echo '<input type="color" id="' . esc_attr($field_name) . '" name="slots_settings[' . esc_attr($field_name) . ']" value="' . esc_attr($value) . '" />';
+        
+        switch ($field_name) {
+            case 'primary_color':
+                echo '<p class="description">' . __('Main color for buttons and highlights', 'slots') . '</p>';
+                break;
+                
+            case 'secondary_color':
+                echo '<p class="description">' . __('Secondary color for text and borders', 'slots') . '</p>';
+                break;
+                
+            case 'accent_color':
+                echo '<p class="description">' . __('Accent color for special elements', 'slots') . '</p>';
+                break;
+        }
+    }
+    
+    /**
+     * Number field callback
+     */
+    public function number_field_callback($args) {
+        $options = get_option('slots_settings');
+        $value = isset($options[$args['label_for']]) ? $options[$args['label_for']] : '';
+        
+        $field_name = $args['label_for'];
+        
+        switch ($field_name) {
+            case 'border_radius':
+                echo '<input type="number" id="' . esc_attr($field_name) . '" name="slots_settings[' . esc_attr($field_name) . ']" value="' . esc_attr($value) . '" min="0" max="20" step="1" /> px';
+                break;
+                
+            case 'default_limit':
+                echo '<input type="number" id="' . esc_attr($field_name) . '" name="slots_settings[' . esc_attr($field_name) . ']" value="' . esc_attr($value) . '" min="6" max="48" step="6" />';
+                echo '<p class="description">' . __('Default number of slots to display per page', 'slots') . '</p>';
+                break;
+                
+            default:
+                echo '<input type="number" id="' . esc_attr($field_name) . '" name="slots_settings[' . esc_attr($field_name) . ']" value="' . esc_attr($value) . '" min="0" max="100" step="1" />';
+                break;
+        }
+    }
+    
+    /**
+     * Select field callback
+     */
+    public function select_field_callback($args) {
+        $options = get_option('slots_settings');
+        $value = isset($options[$args['label_for']]) ? $options[$args['label_for']] : '';
+        
+        $field_name = $args['label_for'];
+        
+        switch ($field_name) {
+            case 'font_family':
+                echo '<select id="' . esc_attr($field_name) . '" name="slots_settings[' . esc_attr($field_name) . ']">';
+                echo '<option value="-apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif"' . selected($value, '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', false) . '>' . __('System Default', 'slots') . '</option>';
+                echo '<option value="\'Arial\', sans-serif"' . selected($value, "'Arial', sans-serif", false) . '>' . __('Arial', 'slots') . '</option>';
+                echo '<option value="\'Georgia\', serif"' . selected($value, "'Georgia', serif", false) . '>' . __('Georgia', 'slots') . '</option>';
+                echo '<option value="\'Courier New\', monospace"' . selected($value, "'Courier New', monospace", false) . '>' . __('Courier New', 'slots') . '</option>';
+                echo '</select>';
+                echo '<p class="description">' . __('Font family for slot cards and text', 'slots') . '</p>';
+                break;
+                
+            case 'default_columns':
+                echo '<select id="' . esc_attr($field_name) . '" name="slots_settings[' . esc_attr($field_name) . ']">';
+                echo '<option value="3"' . selected($value, '3', false) . '>' . __('3 Columns', 'slots') . '</option>';
+                echo '<option value="4"' . selected($value, '4', false) . '>' . __('4 Columns', 'slots') . '</option>';
+                echo '<option value="5"' . selected($value, '5', false) . '>' . __('5 Columns', 'slots') . '</option>';
+                echo '</select>';
+                echo '<p class="description">' . __('Default number of columns in grid view', 'slots') . '</p>';
+                break;
+        }
+    }
+    
+    /**
+     * Textarea field callback
+     */
+    public function textarea_field_callback($args) {
+        $options = get_option('slots_settings');
+        $value = isset($options[$args['label_for']]) ? $options[$args['label_for']] : '';
+        
+        echo '<textarea id="' . esc_attr($args['label_for']) . '" name="slots_settings[' . esc_attr($args['label_for']) . ']" rows="10" cols="50" class="large-text code">' . esc_textarea($value) . '</textarea>';
+        
+        if ($args['label_for'] === 'custom_css') {
+            echo '<p class="description">';
+            echo __('Add custom CSS to override default styles. You can use CSS variables like:', 'slots');
+            echo ' <code>{{primary_color}}</code>, <code>{{secondary_color}}</code>, <code>{{border_radius}}</code>';
+            echo '</p>';
+        }
+    }
+    
+    /**
+     * Slot Editor Markup field callback
+     */
+    public function slot_editor_markup_field_callback($args) {
+        $options = get_option('slots_settings');
+        $value = isset($options[$args['label_for']]) ? $options[$args['label_for']] : '';
+        
+        // Default markup example
+                            $default_markup = '<div class="slot-detail-container">
+                <div class="slot-detail-header">
+                    <div class="slot-detail-image">
+                        <img src="{{slot_image}}" alt="{{slot_title}}" class="slot-detail-main-image">
+                    </div>
+                    <div class="slot-detail-info">
+                        <h1 class="slot-detail-title">{{slot_title}}</h1>
+                        <div class="slot-detail-provider">Provider: {{slot_provider}}</div>
+                        <div class="slot-detail-rating">Rating: {{slot_rating}}</div>
+                        <div class="slot-detail-rtp">RTP: {{slot_rtp}}</div>
+                        <div class="slot-detail-wager">Wager Range: {{slot_wager}}</div>
+                        <div class="slot-detail-id">Slot ID: {{slot_id}}</div>
+                    </div>
+                </div>
+                <div class="slot-detail-description">{{slot_description}}</div>
+                <div class="slot-detail-actions">
+                    <a href="{{slot_permalink}}" class="slot-detail-button primary">Play Now</a>
+                </div>
+            </div>';
+        
+        if (empty($value)) {
+            $value = $default_markup;
+        }
+        
+        echo '<textarea id="' . esc_attr($args['label_for']) . '" name="slots_settings[' . esc_attr($args['label_for']) . ']" rows="15" cols="80" class="large-text code">' . esc_textarea($value) . '</textarea>';
+        echo '<p class="description">' . __('Customize the HTML markup for individual slot pages. Use the variables listed above to insert dynamic content.', 'slots') . '</p>';
+        echo '<p class="description"><strong>' . __('Note:', 'slots') . '</strong> ' . __('This template will be used when the "editor" template is selected in shortcodes or when using [slot_detail template="editor"].', 'slots') . '</p>';
+    }
+    
+    /**
+     * Theme field callback
+     */
+    public function theme_field_callback($args) {
+        $options = get_option('slots_settings');
+        $field_id = $args['label_for'];
+        $value = isset($options[$field_id]) ? $options[$field_id] : 'default';
+        
+        $themes = new Slots_Themes();
+        $available_themes = $themes->get_themes();
+        
+        echo '<select id="' . esc_attr($field_id) . '" name="slots_settings[' . esc_attr($field_id) . ']">';
+        
+        foreach ($available_themes as $theme_key => $theme) {
+            $selected = selected($value, $theme_key, false);
+            echo '<option value="' . esc_attr($theme_key) . '" ' . $selected . '>';
+            echo esc_html($theme['name']);
+            echo '</option>';
+        }
+        
+        echo '</select>';
+        
+        // Show theme descriptions
+        echo '<div class="theme-descriptions" style="margin-top: 10px;">';
+        foreach ($available_themes as $theme_key => $theme) {
+            $display = ($value === $theme_key) ? 'block' : 'none';
+            echo '<div class="theme-description" id="theme-desc-' . esc_attr($theme_key) . '" style="display: ' . $display . '; padding: 8px; background: #f9f9f9; border-left: 3px solid #0073aa; margin-top: 5px;">';
+            echo '<strong>' . esc_html($theme['name']) . ':</strong> ' . esc_html($theme['description']);
+            echo '</div>';
+        }
+        echo '</div>';
+        
+        echo '<p class="description">' . __('Choose a theme for your slots display. Each theme provides different visual styles.', 'slots') . '</p>';
+        
+        // Add JavaScript to show/hide descriptions
+        echo '<script>
+        jQuery(document).ready(function($) {
+            $("#theme").on("change", function() {
+                var selectedTheme = $(this).val();
+                $(".theme-description").hide();
+                $("#theme-desc-" + selectedTheme).show();
+            });
+        });
+        </script>';
     }
     
     /**
@@ -338,5 +742,12 @@ class Slots_Admin {
         }
         
         return false;
+    }
+
+    /**
+     * Demo page
+     */
+    public function demo_page() {
+        include SLOTS_PLUGIN_DIR . 'templates/demo-page.php';
     }
 }

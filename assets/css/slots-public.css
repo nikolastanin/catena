@@ -1,134 +1,893 @@
 /**
- * Public CSS for Slots Plugin
+ * Public CSS for Slots Plugin with Tailwind Utilities
  *
  * @package Slots
  */
 
+
+/* CSS Custom Properties for Easy Customization */
+
+:root {
+    /* Colors */
+    --slots-primary: #3b82f6;
+    --slots-primary-hover: #2563eb;
+    --slots-secondary: #64748b;
+    --slots-accent: #f59e0b;
+    --slots-success: #10b981;
+    --slots-danger: #ef4444;
+    --slots-warning: #f59e0b;
+    --slots-info: #06b6d4;
+    /* Background Colors */
+    --slots-bg-primary: #ffffff;
+    --slots-bg-secondary: #f8fafc;
+    --slots-bg-card: #ffffff;
+    --slots-bg-overlay: rgba(0, 0, 0, 0.5);
+    /* Text Colors */
+    --slots-text-primary: #1e293b;
+    --slots-text-secondary: #64748b;
+    --slots-text-muted: #94a3b8;
+    --slots-text-inverse: #ffffff;
+    /* Border Colors */
+    --slots-border-primary: #e2e8f0;
+    --slots-border-secondary: #cbd5e1;
+    --slots-border-accent: #3b82f6;
+    /* Spacing */
+    --slots-spacing-xs: 0.25rem;
+    --slots-spacing-sm: 0.5rem;
+    --slots-spacing-md: 1rem;
+    --slots-spacing-lg: 1.5rem;
+    --slots-spacing-xl: 2rem;
+    --slots-spacing-2xl: 3rem;
+    /* Border Radius */
+    --slots-radius-sm: 0.25rem;
+    --slots-radius-md: 0.5rem;
+    --slots-radius-lg: 0.75rem;
+    --slots-radius-xl: 1rem;
+    /* Shadows */
+    --slots-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --slots-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --slots-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --slots-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    /* Typography */
+    --slots-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --slots-font-size-xs: 0.75rem;
+    --slots-font-size-sm: 0.875rem;
+    --slots-font-size-base: 1rem;
+    --slots-font-size-lg: 1.125rem;
+    --slots-font-size-xl: 1.25rem;
+    --slots-font-size-2xl: 1.5rem;
+    --slots-font-size-3xl: 1.875rem;
+    /* Transitions */
+    --slots-transition: all 0.2s ease-in-out;
+    --slots-transition-fast: all 0.15s ease-in-out;
+    --slots-transition-slow: all 0.3s ease-in-out;
+}
+
+
+/* Base Container Styles */
+
 .slots-container {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    padding: var(--slots-spacing-md);
+    font-family: var(--slots-font-family);
+    color: var(--slots-text-primary);
 }
 
-.slots-title {
-    text-align: center;
-    color: #333;
-    margin-bottom: 30px;
-    font-size: 28px;
-    font-weight: 600;
-}
 
-.slots-no-slots {
-    text-align: center;
-    color: #666;
-    font-style: italic;
-    padding: 40px 20px;
-    background: #f9f9f9;
-    border-radius: 8px;
-}
+/* Grid Layout */
 
-.slots-list {
+.slots-grid {
     display: grid;
-    gap: 15px;
-    margin-bottom: 30px;
+    gap: var(--slots-spacing-lg);
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
-.slot-item {
+@media (min-width: 640px) {
+    .slots-grid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .slots-grid {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    }
+}
+
+
+/* Slot Card Styles */
+
+.slot-card {
+    background: var(--slots-bg-card);
+    border: 1px solid var(--slots-border-primary);
+    border-radius: var(--slots-radius-lg);
+    overflow: hidden;
+    transition: var(--slots-transition);
+    box-shadow: var(--slots-shadow-sm);
+}
+
+.slot-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--slots-shadow-lg);
+    border-color: var(--slots-border-accent);
+}
+
+.slot-card-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    background: var(--slots-bg-secondary);
+}
+
+.slot-card-content {
+    padding: var(--slots-spacing-lg);
+}
+
+.slot-card-title {
+    font-size: var(--slots-font-size-lg);
+    font-weight: 600;
+    color: var(--slots-text-primary);
+    margin-bottom: var(--slots-spacing-sm);
+    line-height: 1.3;
+}
+
+.slot-card-provider {
+    font-size: var(--slots-font-size-sm);
+    color: var(--slots-text-secondary);
+    margin-bottom: var(--slots-spacing-md);
+}
+
+.slot-card-rating {
+    display: flex;
+    align-items: center;
+    gap: var(--slots-spacing-sm);
+    margin-bottom: var(--slots-spacing-md);
+}
+
+.star-rating {
+    display: flex;
+    gap: 2px;
+}
+
+.star {
+    color: var(--slots-accent);
+    font-size: var(--slots-font-size-sm);
+}
+
+.star.empty {
+    color: var(--slots-border-secondary);
+}
+
+.slot-card-meta {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
-    background: #fff;
-    border: 2px solid #e1e5e9;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: var(--slots-spacing-md);
+    font-size: var(--slots-font-size-sm);
+    color: var(--slots-text-secondary);
 }
 
-.slot-item:hover {
-    border-color: #0073aa;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+.slot-card-rtp {
+    background: var(--slots-bg-secondary);
+    padding: var(--slots-spacing-xs) var(--slots-spacing-sm);
+    border-radius: var(--slots-radius-sm);
+    font-weight: 500;
 }
 
-.slot-time {
+.slot-card-button {
+    width: 100%;
+    background: var(--slots-primary);
+    color: var(--slots-text-inverse);
+    border: none;
+    padding: var(--slots-spacing-sm) var(--slots-spacing-md);
+    border-radius: var(--slots-radius-md);
+    font-weight: 500;
+    text-decoration: none;
+    text-align: center;
+    display: inline-block;
+    transition: var(--slots-transition);
+    cursor: pointer;
+}
+
+.slot-card-button:hover {
+    background: var(--slots-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--slots-shadow-md);
+}
+
+
+/* Filters and Controls */
+
+.slots-controls {
     display: flex;
-    flex-direction: column;
-    gap: 5px;
+    flex-wrap: wrap;
+    gap: var(--slots-spacing-md);
+    margin-bottom: var(--slots-spacing-xl);
+    align-items: center;
 }
 
-.time-label {
-    font-size: 12px;
-    color: #666;
-    text-transform: uppercase;
-    font-weight: 600;
+.slots-filter {
+    display: flex;
+    align-items: center;
+    gap: var(--slots-spacing-sm);
 }
 
-.time-value {
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
+.slots-filter label {
+    font-weight: 500;
+    color: var(--slots-text-secondary);
+    font-size: var(--slots-font-size-sm);
 }
+
+.slots-filter select,
+.slots-filter input {
+    padding: var(--slots-spacing-sm);
+    border: 1px solid var(--slots-border-primary);
+    border-radius: var(--slots-radius-md);
+    background: var(--slots-bg-primary);
+    color: var(--slots-text-primary);
+    font-size: var(--slots-font-size-sm);
+}
+
+.slots-filter select:focus,
+.slots-filter input:focus {
+    outline: none;
+    border-color: var(--slots-border-accent);
+    box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
+}
+
+
+/* Pagination */
 
 .slots-pagination {
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: var(--slots-spacing-sm);
+    margin-top: var(--slots-spacing-xl);
 }
 
-.load-more-slots {
-    background: #f1f1f1;
-    color: #333;
-    border: 2px solid #ddd;
-    padding: 12px 24px;
-    border-radius: 6px;
+.slots-pagination button {
+    padding: var(--slots-spacing-sm) var(--slots-spacing-md);
+    border: 1px solid var(--slots-border-primary);
+    background: var(--slots-bg-primary);
+    color: var(--slots-text-primary);
+    border-radius: var(--slots-radius-md);
     cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s ease;
+    transition: var(--slots-transition);
 }
 
-.load-more-slots:hover {
-    background: #e1e1e1;
-    border-color: #0073aa;
+.slots-pagination button:hover {
+    background: var(--slots-bg-secondary);
+    border-color: var(--slots-border-accent);
+}
+
+.slots-pagination button.active {
+    background: var(--slots-primary);
+    color: var(--slots-text-inverse);
+    border-color: var(--slots-primary);
 }
 
 
-/* Notification Styles */
+/* Loading States */
 
-.slots-notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 15px 20px;
-    border-radius: 6px;
-    color: #fff;
-    font-weight: 600;
-    z-index: 1001;
-    max-width: 300px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.slots-loading {
+    text-align: center;
+    padding: var(--slots-spacing-2xl);
+    color: var(--slots-text-secondary);
 }
 
-.slots-notification.success {
-    background: #46b450;
+.slots-loading::after {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--slots-border-primary);
+    border-radius: 50%;
+    border-top-color: var(--slots-primary);
+    animation: spin 1s ease-in-out infinite;
+    margin-left: var(--slots-spacing-sm);
 }
 
-.slots-notification.error {
-    background: #dc3232;
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
-.slots-notification.info {
-    background: #0073aa;
+
+/* Empty State */
+
+.slots-empty {
+    text-align: center;
+    padding: var(--slots-spacing-2xl);
+    color: var(--slots-text-secondary);
+}
+
+.slots-empty-icon {
+    font-size: 3rem;
+    color: var(--slots-border-secondary);
+    margin-bottom: var(--slots-spacing-md);
 }
 
 
 /* Responsive Design */
 
 @media (max-width: 768px) {
-    .slot-item {
+    .slots-controls {
         flex-direction: column;
-        text-align: center;
-        gap: 15px;
+        align-items: stretch;
     }
-    .slots-notification {
-        right: 10px;
-        left: 10px;
-        max-width: none;
+    .slots-filter {
+        flex-direction: column;
+        align-items: stretch;
     }
+    .slots-grid {
+        grid-template-columns: 1fr;
+    }
+    .slot-card-content {
+        padding: var(--slots-spacing-md);
+    }
+}
+
+
+/* Utility Classes */
+
+.slots-text-center {
+    text-align: center;
+}
+
+.slots-text-left {
+    text-align: left;
+}
+
+.slots-text-right {
+    text-align: right;
+}
+
+.slots-mb-0 {
+    margin-bottom: 0;
+}
+
+.slots-mb-1 {
+    margin-bottom: var(--slots-spacing-xs);
+}
+
+.slots-mb-2 {
+    margin-bottom: var(--slots-spacing-sm);
+}
+
+.slots-mb-3 {
+    margin-bottom: var(--slots-spacing-md);
+}
+
+.slots-mb-4 {
+    margin-bottom: var(--slots-spacing-lg);
+}
+
+.slots-mb-5 {
+    margin-bottom: var(--slots-spacing-xl);
+}
+
+.slots-mt-0 {
+    margin-top: 0;
+}
+
+.slots-mt-1 {
+    margin-top: var(--slots-spacing-xs);
+}
+
+.slots-mt-2 {
+    margin-top: var(--slots-spacing-sm);
+}
+
+.slots-mt-3 {
+    margin-top: var(--slots-spacing-md);
+}
+
+.slots-mt-4 {
+    margin-top: var(--slots-spacing-lg);
+}
+
+.slots-mt-5 {
+    margin-top: var(--slots-spacing-xl);
+}
+
+
+/* Custom Theme Overrides */
+
+
+/* Theme Overrides - Now loaded from separate theme files */
+
+
+/* Slot Detail Page Styles */
+
+.slot-detail-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: var(--slots-spacing-lg);
+    background: var(--slots-bg-primary);
+    border-radius: var(--slots-radius-lg);
+    box-shadow: var(--slots-shadow-lg);
+}
+
+.slot-detail-header {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: var(--slots-spacing-xl);
+    margin-bottom: var(--slots-spacing-xl);
+    align-items: start;
+}
+
+@media (max-width: 768px) {
+    .slot-detail-header {
+        grid-template-columns: 1fr;
+        gap: var(--slots-spacing-lg);
+    }
+}
+
+.slot-detail-image {
+    position: relative;
+}
+
+.slot-detail-main-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: var(--slots-radius-lg);
+    box-shadow: var(--slots-shadow-md);
+}
+
+.slot-detail-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--slots-spacing-md);
+}
+
+.slot-detail-title {
+    font-size: var(--slots-font-size-3xl);
+    font-weight: 700;
+    color: var(--slots-text-primary);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.slot-detail-provider,
+.slot-detail-rating,
+.slot-detail-rtp,
+.slot-detail-wager,
+.slot-detail-id {
+    display: flex;
+    align-items: center;
+    gap: var(--slots-spacing-sm);
+    padding: var(--slots-spacing-sm);
+    background: var(--slots-bg-secondary);
+    border-radius: var(--slots-radius-md);
+}
+
+.provider-label,
+.rating-label,
+.rtp-label,
+.wager-label,
+.id-label {
+    font-weight: 600;
+    color: var(--slots-text-secondary);
+    min-width: 80px;
+}
+
+.provider-name,
+.rating-value,
+.rtp-value,
+.wager-value,
+.id-value {
+    color: var(--slots-text-primary);
+    font-weight: 500;
+}
+
+.rating-display {
+    display: flex;
+    align-items: center;
+    gap: var(--slots-spacing-sm);
+}
+
+.slot-detail-content {
+    margin-bottom: var(--slots-spacing-xl);
+}
+
+.slot-detail-content h2 {
+    font-size: var(--slots-font-size-2xl);
+    font-weight: 600;
+    color: var(--slots-text-primary);
+    margin-bottom: var(--slots-spacing-md);
+    padding-bottom: var(--slots-spacing-sm);
+    border-bottom: 2px solid var(--slots-border-primary);
+}
+
+.slot-detail-description {
+    color: var(--slots-text-secondary);
+    line-height: 1.6;
+    font-size: var(--slots-font-size-base);
+}
+
+.slot-detail-actions {
+    display: flex;
+    gap: var(--slots-spacing-md);
+    margin-bottom: var(--slots-spacing-xl);
+    flex-wrap: wrap;
+}
+
+.slot-detail-button {
+    padding: var(--slots-spacing-md) var(--slots-spacing-xl);
+    border-radius: var(--slots-radius-md);
+    text-decoration: none;
+    font-weight: 600;
+    text-align: center;
+    transition: var(--slots-transition);
+    display: inline-block;
+    min-width: 120px;
+}
+
+.slot-detail-button.primary {
+    background: var(--slots-primary);
+    color: var(--slots-text-inverse);
+}
+
+.slot-detail-button.primary:hover {
+    background: var(--slots-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--slots-shadow-lg);
+}
+
+.slot-detail-button.secondary {
+    background: var(--slots-bg-secondary);
+    color: var(--slots-text-primary);
+    border: 1px solid var(--slots-border-primary);
+}
+
+.slot-detail-button.secondary:hover {
+    background: var(--slots-border-primary);
+    color: var(--slots-text-inverse);
+}
+
+.slot-detail-meta {
+    padding: var(--slots-spacing-lg);
+    background: var(--slots-bg-secondary);
+    border-radius: var(--slots-radius-md);
+    border-top: 1px solid var(--slots-border-primary);
+}
+
+.meta-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.meta-label {
+    font-weight: 500;
+    color: var(--slots-text-secondary);
+}
+
+.meta-value {
+    color: var(--slots-text-primary);
+}
+
+
+/* Enhanced Card Styles */
+
+.slot-card-image-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.slot-card-rating-overlay {
+    position: absolute;
+    top: var(--slots-spacing-sm);
+    right: var(--slots-spacing-sm);
+    background: rgba(0, 0, 0, 0.8);
+    padding: var(--slots-spacing-xs) var(--slots-spacing-sm);
+    border-radius: var(--slots-radius-sm);
+    backdrop-filter: blur(4px);
+}
+
+.slot-card-rating-overlay .star-rating {
+    filter: brightness(1.2);
+}
+
+.rating-value {
+    margin-left: var(--slots-spacing-xs);
+    font-weight: 600;
+    color: var(--slots-text-primary);
+}
+
+.slot-card-wager {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--slots-spacing-md);
+    font-size: var(--slots-font-size-sm);
+    color: var(--slots-text-secondary);
+}
+
+.wager-label {
+    font-weight: 500;
+}
+
+.wager-value {
+    color: var(--slots-text-primary);
+    font-weight: 600;
+}
+
+.slot-card-excerpt {
+    color: var(--slots-text-secondary);
+    font-size: var(--slots-font-size-sm);
+    line-height: 1.4;
+    margin-bottom: var(--slots-spacing-md);
+}
+
+.slot-card-actions {
+    margin-top: auto;
+}
+
+
+/* Error and Loading States */
+
+.slots-error {
+    text-align: center;
+    padding: var(--slots-spacing-xl);
+    color: var(--slots-danger);
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid var(--slots-danger);
+    border-radius: var(--slots-radius-md);
+    margin: var(--slots-spacing-lg) 0;
+}
+
+
+/* Responsive Enhancements */
+
+@media (max-width: 640px) {
+    .slot-detail-container {
+        padding: var(--slots-spacing-md);
+    }
+    .slot-detail-title {
+        font-size: var(--slots-font-size-2xl);
+    }
+    .slot-detail-actions {
+        flex-direction: column;
+    }
+    .slot-detail-button {
+        width: 100%;
+    }
+    .slots-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .slots-filter {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+
+/* Demo Page Styles */
+
+.slots-demo-page {
+    min-height: 100vh;
+    background: var(--slots-bg-secondary);
+}
+
+.slots-demo-header {
+    background: var(--slots-bg-primary);
+    border-bottom: 1px solid var(--slots-border-primary);
+    padding: var(--slots-spacing-2xl) 0;
+    text-align: center;
+}
+
+.slots-demo-header h1 {
+    font-size: var(--slots-font-size-3xl);
+    color: var(--slots-text-primary);
+    margin-bottom: var(--slots-spacing-md);
+}
+
+.slots-demo-header p {
+    font-size: var(--slots-font-size-lg);
+    color: var(--slots-text-secondary);
+    margin: 0;
+}
+
+.slots-demo-main {
+    padding: var(--slots-spacing-2xl) 0;
+}
+
+.slots-demo-section {
+    background: var(--slots-bg-primary);
+    border: 1px solid var(--slots-border-primary);
+    border-radius: var(--slots-radius-lg);
+    padding: var(--slots-spacing-xl);
+    margin-bottom: var(--slots-spacing-xl);
+    box-shadow: var(--slots-shadow-sm);
+}
+
+.slots-demo-section h2 {
+    color: var(--slots-text-primary);
+    font-size: var(--slots-font-size-2xl);
+    margin-bottom: var(--slots-spacing-md);
+    padding-bottom: var(--slots-spacing-md);
+    border-bottom: 2px solid var(--slots-primary);
+}
+
+.slots-demo-section p {
+    color: var(--slots-text-secondary);
+    font-size: var(--slots-font-size-base);
+    margin-bottom: var(--slots-spacing-lg);
+}
+
+.slots-code-examples {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--slots-spacing-lg);
+    margin-top: var(--slots-spacing-lg);
+}
+
+.code-example {
+    background: var(--slots-bg-secondary);
+    border: 1px solid var(--slots-border-secondary);
+    border-radius: var(--slots-radius-md);
+    padding: var(--slots-spacing-lg);
+}
+
+.code-example h4 {
+    color: var(--slots-text-primary);
+    font-size: var(--slots-font-size-lg);
+    margin-bottom: var(--slots-spacing-md);
+}
+
+.code-example code {
+    background: var(--slots-text-primary);
+    color: var(--slots-text-inverse);
+    padding: var(--slots-spacing-sm) var(--slots-spacing-md);
+    border-radius: var(--slots-radius-sm);
+    font-family: monospace;
+    display: block;
+    margin-bottom: var(--slots-spacing-md);
+}
+
+.code-example p {
+    color: var(--slots-text-secondary);
+    font-size: var(--slots-font-size-sm);
+    margin: 0;
+}
+
+.slots-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--slots-spacing-lg);
+    margin-top: var(--slots-spacing-lg);
+}
+
+.feature-item {
+    text-align: center;
+    padding: var(--slots-spacing-lg);
+    background: var(--slots-bg-secondary);
+    border-radius: var(--slots-radius-md);
+    border: 1px solid var(--slots-border-secondary);
+}
+
+.feature-item h3 {
+    color: var(--slots-primary);
+    font-size: var(--slots-font-size-lg);
+    margin-bottom: var(--slots-spacing-md);
+}
+
+.feature-item p {
+    color: var(--slots-text-secondary);
+    font-size: var(--slots-font-size-sm);
+    margin: 0;
+}
+
+.slots-demo-footer {
+    background: var(--slots-bg-primary);
+    border-top: 1px solid var(--slots-border-primary);
+    padding: var(--slots-spacing-xl) 0;
+    text-align: center;
+}
+
+.slots-demo-footer p {
+    color: var(--slots-text-secondary);
+    margin: 0;
+}
+
+
+/* Responsive adjustments for demo page */
+
+@media (max-width: 768px) {
+    .slots-demo-header {
+        padding: var(--slots-spacing-xl) 0;
+    }
+    .slots-demo-header h1 {
+        font-size: var(--slots-font-size-2xl);
+    }
+    .slots-demo-section {
+        padding: var(--slots-spacing-lg);
+        margin-bottom: var(--slots-spacing-lg);
+    }
+    .slots-code-examples {
+        grid-template-columns: 1fr;
+    }
+    .slots-features {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* Theme Switcher Styles */
+
+.slots-theme-switcher {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: var(--slots-bg-secondary, #f8fafc);
+    border-radius: var(--slots-radius-md, 0.5rem);
+    border: 1px solid var(--slots-border-primary, #e2e8f0);
+}
+
+.slots-theme-switcher h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--slots-text-primary, #1e293b);
+}
+
+.slots-theme-switcher p {
+    margin: 0 0 1rem 0;
+    color: var(--slots-text-secondary, #64748b);
+}
+
+.theme-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.theme-option {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--slots-bg-card, #ffffff);
+    border: 1px solid var(--slots-border-primary, #e2e8f0);
+    border-radius: var(--slots-radius-sm, 0.25rem);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.theme-option:hover {
+    border-color: var(--slots-border-accent, #3b82f6);
+    box-shadow: var(--slots-shadow-sm, 0 1px 3px 0 rgb(0 0 0 / 0.1));
+}
+
+.theme-option input[type="radio"] {
+    margin-right: 0.5rem;
+}
+
+.theme-name {
+    font-weight: 600;
+    color: var(--slots-text-primary, #1e293b);
+    margin-right: 0.5rem;
+}
+
+.theme-description {
+    font-size: 0.875rem;
+    color: var(--slots-text-muted, #94a3b8);
+}
+
+.theme-note {
+    font-size: 0.875rem;
+    color: var(--slots-text-muted, #94a3b8);
+    margin: 0;
+}
+
+.theme-feedback {
+    background: var(--slots-border-accent, #3b82f6);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: var(--slots-radius-sm, 0.25rem);
+    margin-top: 1rem;
+    text-align: center;
+    font-weight: 500;
 }

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="slotGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="reelGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Main slot machine body -->
+  <rect x="20" y="40" width="160" height="120" rx="15" ry="15" fill="url(#slotGradient)" stroke="#1e40af" stroke-width="3"/>
+  
+  <!-- Top section -->
+  <rect x="30" y="30" width="140" height="20" rx="10" ry="10" fill="#1e40af"/>
+  
+  <!-- Reel windows -->
+  <rect x="35" y="55" width="30" height="40" rx="5" ry="5" fill="#1e293b" stroke="#fbbf24" stroke-width="2"/>
+  <rect x="75" y="55" width="30" height="40" rx="5" ry="5" fill="#1e293b" stroke="#fbbf24" stroke-width="2"/>
+  <rect x="115" y="55" width="30" height="40" rx="5" ry="5" fill="#1e293b" stroke="#fbbf24" stroke-width="2"/>
+  
+  <!-- Reel symbols -->
+  <circle cx="50" cy="75" r="8" fill="url(#reelGradient)"/>
+  <polygon points="90,67 90,83 103,75" fill="url(#reelGradient)"/>
+  <rect x="120" y="67" width="16" height="16" rx="2" ry="2" fill="url(#reelGradient)"/>
+  
+  <!-- Lever -->
+  <rect x="170" y="60" width="8" height="80" rx="4" ry="4" fill="#64748b"/>
+  <circle cx="174" cy="65" r="6" fill="#fbbf24"/>
+  
+  <!-- Coin slot -->
+  <ellipse cx="100" cy="110" rx="15" ry="8" fill="#374151" stroke="#fbbf24" stroke-width="2"/>
+  
+  <!-- Decorative elements -->
+  <circle cx="50" cy="25" r="3" fill="#fbbf24"/>
+  <circle cx="150" cy="25" r="3" fill="#fbbf24"/>
+  <circle cx="100" cy="25" r="3" fill="#ef4444"/>
+</svg>

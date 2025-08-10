@@ -1,0 +1,32 @@
+/* Colorful Theme for Slots Plugin */
+
+.slots-theme-colorful {
+    /* Vibrant background colors */
+    --slots-bg-primary: #f0f9ff;
+    --slots-bg-secondary: #e0f2fe;
+    --slots-bg-card: #ffffff;
+    --slots-bg-overlay: rgba(59, 130, 246, 0.1);
+    /* Bright text colors */
+    --slots-text-primary: #0c4a6e;
+    --slots-text-secondary: #0369a1;
+    --slots-text-muted: #0284c7;
+    --slots-text-inverse: #ffffff;
+    /* Colorful borders */
+    --slots-border-primary: #38bdf8;
+    --slots-border-secondary: #7dd3fc;
+    --slots-border-accent: #f59e0b;
+    /* Enhanced shadows with color tint */
+    --slots-shadow-sm: 0 2px 4px 0 rgb(59 130 246 / 0.15);
+    --slots-shadow-md: 0 6px 12px -2px rgb(59 130 246 / 0.2), 0 3px 6px -1px rgb(59 130 246 / 0.15);
+    --slots-shadow-lg: 0 15px 25px -5px rgb(59 130 246 / 0.25), 0 8px 12px -6px rgb(59 130 246 / 0.2);
+    --slots-shadow-xl: 0 25px 35px -10px rgb(59 130 246 / 0.3), 0 12px 16px -8px rgb(59 130 246 / 0.25);
+    /* Enhanced transitions */
+    --slots-transition: all 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --slots-transition-fast: all 0.15s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --slots-transition-slow: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    /* Moderate border radius */
+    --slots-radius-sm: 0.5rem;
+    --slots-radius-md: 1rem;
+    --slots-radius-lg: 1.5rem;
+    --slots-radius-xl: 2rem;
+}

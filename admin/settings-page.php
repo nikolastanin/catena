@@ -9,6 +9,9 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+
+// Get current settings
+$settings = get_option('slots_settings', array());
 ?>
 
 <div class="wrap">
@@ -18,8 +21,9 @@ if (!defined('ABSPATH')) {
         <?php
         settings_fields('slots_options');
         do_settings_sections('slots-settings');
-        submit_button();
         ?>
+        
+        <?php submit_button(); ?>
     </form>
     
     <div class="slots-settings-info">
@@ -44,19 +48,31 @@ if (!defined('ABSPATH')) {
         <h2><?php _e('Help & Documentation', 'slots'); ?></h2>
         <div class="help-content">
             <h3><?php _e('Shortcode Usage', 'slots'); ?></h3>
-            <p><?php _e('Use the following shortcode to display slots on any page or post:', 'slots'); ?></p>
-            <code>[slots type="list" limit="10"]</code>
+            <p><?php _e('Use the following shortcodes to display slots on any page or post:', 'slots'); ?></p>
+            
+            <h4><?php _e('Grid Display', 'slots'); ?></h4>
+            <code>[slots_grid limit="12" sort="recent" show_filters="true" show_pagination="true"]</code>
+            
+            <h4><?php _e('Individual Slot', 'slots'); ?></h4>
+            <code>[slot_detail id="123" template="editor" show_rating="true" show_description="true"]</code>
+            <p class="description"><?php _e('Available templates: default, minimal, compact, featured, editor', 'slots'); ?></p>
             
             <h3><?php _e('Available Parameters', 'slots'); ?></h3>
             <ul>
-                <li><strong>type</strong> - Display type (list, grid, calendar)</li>
-                <li><strong>limit</strong> - Maximum number of slots to display</li>
+                <li><strong>limit</strong> - Maximum number of slots to display (1, 3, 6, 9, or 12)</li>
+                <li><strong>sort</strong> - Sorting (recent, random)</li>
+                <li><strong>show_filters</strong> - Show/hide filter controls</li>
+                <li><strong>show_pagination</strong> - Show/hide pagination</li>
             </ul>
             
             <h3><?php _e('Custom Fields', 'slots'); ?></h3>
-            <p><?php _e('The plugin adds custom fields to posts for slot information:', 'slots'); ?></p>
+            <p><?php _e('The plugin adds custom fields to slot posts for:', 'slots'); ?></p>
             <ul>
-                <li><strong>Custom Field</strong> - A text field for additional slot information</li>
+                <li><strong>Slot ID</strong> - Unique identifier for the slot game</li>
+                <strong>Star Rating</strong> - 1-5 star rating system</li>
+                <li><strong>Provider Name</strong> - Game provider/developer</li>
+                <li><strong>RTP</strong> - Return to Player percentage</li>
+                <li><strong>Wager Limits</strong> - Minimum and maximum bet amounts</li>
             </ul>
         </div>
     </div>
@@ -83,6 +99,12 @@ if (!defined('ABSPATH')) {
     margin-top: 0;
 }
 
+.help-content h4 {
+    margin-top: 15px;
+    margin-bottom: 8px;
+    color: #23282d;
+}
+
 .help-content code {
     background: #f1f1f1;
     padding: 2px 6px;
@@ -96,5 +118,40 @@ if (!defined('ABSPATH')) {
 
 .help-content li {
     margin-bottom: 5px;
+}
+
+.form-table th {
+    width: 200px;
+}
+
+.slots-editor-help {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.slots-editor-help h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #23282d;
+}
+
+.slots-editor-help ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.slots-editor-help li {
+    margin-bottom: 5px;
+}
+
+.slots-editor-help code {
+    background: #fff;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+    border: 1px solid #ddd;
 }
 </style>

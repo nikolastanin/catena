@@ -1,0 +1,42 @@
+/* IDEA IS TO GENERATE A THEME BASED ON THE USER'S INPUT */
+
+
+/* AI Generated Theme for Slots Plugin */
+
+
+/* iOS-style (light) */
+
+.slots-theme-ai {
+    /* Backgrounds (soft, roomy) */
+    --slots-bg-primary: #F2F2F7;
+    /* system grouped background */
+    --slots-bg-secondary: #FFFFFF;
+    /* surfaces */
+    --slots-bg-card: #FFFFFF;
+    /* cards/sheets */
+    --slots-bg-overlay: rgba(255, 255, 255, 0.6);
+    /* for glassy overlays */
+    /* Text (high legibility, gentle contrast) */
+    --slots-text-primary: #1C1C1E;
+    /* label primary */
+    --slots-text-secondary: #3A3A3C;
+    /* label secondary */
+    --slots-text-muted: #8E8E93;
+    /* tertiary/quaternary */
+    --slots-text-inverse: #FFFFFF;
+    /* Borders (hairline, understated) */
+    --slots-border-primary: #E5E5EA;
+    /* card edges */
+    --slots-border-secondary: #D1D1D6;
+    /* separators */
+    --slots-border-accent: #0A84FF;
+    /* iOS system blue */
+    /* Shadows (soft, lifted) */
+    --slots-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.06);
+    --slots-shadow-md: 0 4px 10px -2px rgb(0 0 0 / 0.08);
+    --slots-shadow-lg: 0 12px 30px -8px rgb(0 0 0 / 0.12);
+    --slots-shadow-xl: 0 24px 60px -12px rgb(0 0 0 / 0.16);
+}
+
+
+/* Optional dark appearance to match iOS’ dynamic feel */

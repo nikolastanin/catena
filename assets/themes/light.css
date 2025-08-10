@@ -1,0 +1,23 @@
+/* Light Theme for Slots Plugin */
+
+.slots-theme-light {
+    /* Background Colors */
+    --slots-bg-primary: #ffffff;
+    --slots-bg-secondary: #f8fafc;
+    --slots-bg-card: #ffffff;
+    --slots-bg-overlay: rgba(255, 255, 255, 0.9);
+    /* Text Colors */
+    --slots-text-primary: #1e293b;
+    --slots-text-secondary: #64748b;
+    --slots-text-muted: #94a3b8;
+    --slots-text-inverse: #ffffff;
+    /* Border Colors */
+    --slots-border-primary: #e2e8f0;
+    --slots-border-secondary: #cbd5e1;
+    --slots-border-accent: #3b82f6;
+    /* Enhanced Shadows for Light Theme */
+    --slots-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px 0 rgb(0 0 0 / 0.06);
+    --slots-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -1px rgb(0 0 0 / 0.06);
+    --slots-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05);
+    --slots-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04);
+}
