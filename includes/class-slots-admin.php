@@ -38,8 +38,8 @@ class Slots_Admin {
      */
     public function add_admin_menu() {
         add_menu_page(
-            __('Slots-Settings', 'slots'),
-            __('Slots-Settings', 'slots'),
+            __('Slots Settings', 'slots'),
+            __('Slots Settings', 'slots'),
             'manage_options',
             'slots-settings',
             array($this, 'settings_page'),
