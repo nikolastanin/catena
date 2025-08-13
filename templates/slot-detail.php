@@ -20,7 +20,7 @@ $theme_class = $themes->get_theme_class($current_theme);
 $theme_class = !empty($theme_class) ? ' ' . $theme_class : '';
 
 // Default image if no thumbnail
-$default_image = SLOTS_PLUGIN_URL . 'assets/images/default-slot.png';
+$default_image = SLOTS_PLUGIN_URL . 'assets/images/default-slot.avif';
 $slot_image = !empty($slot['thumbnail']) ? $slot['thumbnail'] : $default_image;
 
 // Format RTP

@@ -20,7 +20,7 @@ $theme_class = $themes->get_theme_class($current_theme);
 $theme_class = !empty($theme_class) ? ' ' . $theme_class : '';
 
 // Default image if no thumbnail
-$default_image = SLOTS_PLUGIN_URL . 'assets/images/default-slot.png';
+$default_image = SLOTS_PLUGIN_URL . 'assets/images/default-slot.avif';
 $slot_image = !empty($slot['thumbnail']) ? $slot['thumbnail'] : $default_image;
 
 // Format RTP
@@ -86,7 +86,7 @@ echo $parsed_markup;
 function parse_slot_markup($markup, $slot_data, $atts) {
                     // Define available variables and their values
                 $variables = array(
-                    '{{slot_image}}' => esc_url($slot_data['thumbnail'] ?: SLOTS_PLUGIN_URL . 'assets/images/default-slot.png'),
+                    '{{slot_image}}' => esc_url($slot_data['thumbnail'] ?: SLOTS_PLUGIN_URL . 'assets/images/default-slot.avif'),
                     '{{slot_title}}' => esc_html($slot_data['title']),
                     '{{slot_provider}}' => (!empty($slot_data['provider_name']) && filter_var($atts['show_provider'], FILTER_VALIDATE_BOOLEAN)) ? esc_html($slot_data['provider_name']) : '',
                     '{{slot_rating}}' => (!empty($slot_data['star_rating']) && filter_var($atts['show_rating'], FILTER_VALIDATE_BOOLEAN)) ? number_format($slot_data['star_rating'], 1) . '/5' : '',
