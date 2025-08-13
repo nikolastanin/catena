@@ -1,275 +1,127 @@
-# Slots Plugin - Grid Editor System
+# Slots Plugin Documentation
 
-A WordPress plugin that provides a flexible and customizable slot grid editor with custom markup support, dynamic loading, and seamless theme integration.
+## Setup Process
 
-## Features
+### Installing the Plugin
 
-### 🎯 Core Functionality
-- **Custom Post Type**: `slot` post type with comprehensive meta fields
-- **Flexible Grid System**: Multiple grid templates with customizable layouts
-- **Custom Markup Support**: Define your own HTML structure in admin settings
-- **Dynamic Loading**: AJAX-powered pagination and filtering without page reloads
-- **Responsive Design**: Automatically adapts to different screen sizes
-- **Theme Integration**: Seamlessly works with any WordPress theme
+1. Download zip
+2. Install & Activate the plugin
+3. Check settings>permalinks (`/wp-admin/options-permalink.php`) is set to "Post Name" option
 
-### 🔧 Grid Templates
-- **Default Grid** (`slots-grid.php`): Standard grid layout with filters and pagination
+### Adding Slot Games
 
-- **Auto-detection**: Intelligently chooses template based on settings or shortcode attributes
+1. Go to: `/wp-admin/edit.php?post_type=slot`
+2. Click on "Add new Slot"
+3. Fill out the backend fields (Image is not needed)
+4. (optional) Add this shortcode to the Slot content: `[slot_detail]`
+   - If you don't add it to the content, we will still render the shortcode by using a hacky content filter `filter_slot_content()` to save editor time adding the shortcode manually
+5. Publish the slot
 
-### 📱 Shortcode System
-- `[slots_grid]`: Main grid shortcode with extensive customization options
-- `[slot_detail]`: Individual slot detail display
-- Template selection via `template` attribute
-- Configurable limits, sorting, and display options
+### Create a Slot Grid (Listing) Page
 
-## Installation
+1. Create a post or page
+2. **(!!!)** Add this shortcode to the content: `[slots_grid]`
 
-1. Upload the `slots` folder to your `/wp-content/plugins/` directory
-2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Configure the plugin settings in 'Slots' → 'Settings'
+Now, if followed all steps, you should be able to view the basic slots grid.
 
-## Configuration
+## Style/Markup/Features Customization
 
-### Admin Settings
-Navigate to **Slots → Settings** to configure:
+### Modifying Markup for the Grid
 
-- **Grid Editor Markup**: Custom HTML template for slot cards
-- **Default Display Options**: Default limits, sorting, and pagination settings
-- **Custom Fields**: Configure which slot meta fields to display
+**Location:** `/wp-admin/admin.php?page=slots-settings#slot_editor_markup`
 
-### Grid Editor Markup
-The grid editor allows you to define custom HTML structure for slot cards. Use these placeholders:
+There is an option in the backend to customize the markup and styling for the cards that appear in the **grid**. The backend field has placeholder reusable variables that the plugin will use to render dynamic data. Like `{{slot_id}}` `{{slot_title}}` etc.
+
+#### Example Slot Card Template
+
+Use this example HTML to style the grid uniquely. I basically prompted ChatGPT to preserve the placeholder variables like `{{slot_title}}`, and create a neon-like slot design using Tailwind classes.
 
 ```html
-<div class="custom-slot-card">
-    <h3>{slot_title}</h3>
-    <img src="{slot_image}" alt="{slot_title}">
-    <div class="slot-meta">
-        <span class="provider">{provider_name}</span>
-        <span class="rating">{star_rating}</span>
-        <span class="rtp">RTP: {rtp}%</span>
+<!-- CARDS IN THE GRID  -->
+<article
+  class="slot-card group relative overflow-hidden rounded-2xl border-[3px] border-cyan-300 bg-[radial-gradient(120%_120%_at_0%_0%,_#131735_0%,_#0a0d22_55%,_#060814_100%)] shadow-[0_0_22px_rgba(41,211,255,0.35),inset_0_0_30px_rgba(0,0,0,0.6)]"
+  data-slot-id="{{slot_id}}"
+>
+  <!-- scanline overlay -->
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0 z-0 rounded-2xl bg-[repeating-linear-gradient(to_bottom,rgba(255,255,255,0.04)_0,rgba(255,255,255,0.04)_1px,transparent_2px,transparent_4px)] mix-blend-overlay opacity-20"></div>
+
+  <!-- Image / Hero (full width) -->
+  <a href="{{slot_permalink}}" title="{{slot_title}}" class="relative block overflow-hidden border-b-2 border-fuchsia-500">
+    <div class="aspect-[16/9] sm:aspect-[21/9]">
+      <img
+        src="{{slot_image}}"
+        alt="{{slot_title}}"
+        loading="lazy"
+        class="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+      />
     </div>
-    <a href="{slot_permalink}" class="play-button">Play Now</a>
+    <!-- ... rest of code ... -->
+  </a>
+
+  <!-- Content -->
+  <div class="relative z-10 flex flex-col gap-3 p-5 sm:p-6 text-slate-100">
+    <!-- Title -->
+    <h3 class="text-lg font-semibold tracking-tight">
+      <a href="{{slot_permalink}}" title="{{slot_title}}" class="text-[#8be9ff]">
+        {{slot_title}}
+      </a>
+    </h3>
+    <!-- ... rest of code ... -->
+  </div>
+</article>
+```
+
+After adding that new markup, saving and enabling the checkbox, the grid will have the new neon-style design.
+
+### Single Slot Page Markup
+
+**Location:** `/wp-admin/admin.php?page=slots-settings#slot_card_template`
+
+Similarly like the field above, we can edit the single custom post type view.
+
+#### Example HTML for Single Slot Page
+
+Again prompted ChatGPT for this to alter the vibe:
+
+```html
+<!-- SINGLE SLOT CPT Page-->
+<div class="slot-detail-page min-h-[100svh] m-0 p-6 font-sans text-slate-100 bg-[radial-gradient(120%_120%_at_0%_0%,_#131735_0%,_#0a0d22_55%,_#060814_100%)]">
+  <div class="slot-detail-container relative mx-auto max-w-[1000px] overflow-hidden rounded-[18px] border-[3px] border-cyan-300 bg-[#0c0f25] p-5">
+    
+    <!-- CRT scanlines overlay -->
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0 z-0 rounded-[18px]"></div>
+
+    <!-- Header (image full width, details below) -->
+    <div class="slot-detail-header relative z-10 flex flex-col items-stretch gap-5">
+      
+      <!-- Main image: now full width -->
+      <div class="slot-detail-image relative w-full overflow-hidden rounded-xl border-[3px] border-fuchsia-500">
+        <img src="{{slot_image}}" alt="{{slot_title}}" class="slot-detail-main-image">
+        <!-- ... rest of code ... -->
+      </div>
+
+      <!-- Info panel -->
+      <div class="slot-detail-info w-full min-w-0 flex flex-col gap-3">
+        <div class="slot-detail-title">{{slot_title}}</div>
+        <!-- ... rest of code ... -->
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="slot-detail-description">
+      {{slot_description}}
+    </div>
+
+    <!-- Actions -->
+    <div class="slot-detail-actions">
+      <a href="{{slot_permalink}}" class="slot-detail-button primary">
+        ▶ Play Now 🎮
+      </a>
+      <!-- ... rest of code ... -->
+    </div>
+  </div>
 </div>
 ```
 
-**Available Placeholders:**
-- `{slot_title}` - Slot title
-- `{slot_image}` - Slot thumbnail image
-- `{slot_permalink}` - Slot detail page URL
-- `{provider_name}` - Game provider name
-- `{star_rating}` - Star rating (1-5)
-- `{rtp}` - Return to Player percentage
-- `{min_wager}` - Minimum bet amount
-- `{max_wager}` - Maximum bet amount
-- `{slot_excerpt}` - Slot description excerpt
 
-## Usage
 
-### Basic Grid Display
-```php
-// Default grid with 12 slots
-echo do_shortcode('[slots_grid]');
-
-// Custom limit and sorting
-echo do_shortcode('[slots_grid limit="6" sort="random"]');
-
-// Force specific template
-echo do_shortcode('[slots_grid template="editor" limit="9"]');
-```
-
-### Shortcode Attributes
-
-| Attribute | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `limit` | integer | 12 | Number of slots to display |
-| `sort` | string | recent | Sorting method (recent, random) |
-| `template` | string | auto | Template to use (default, editor, auto) |
-| `show_filters` | boolean | true | Show filter controls |
-| `show_pagination` | boolean | true | Show pagination controls |
-
-### PHP Integration
-```php
-// Get slots data
-$slots = get_posts(array(
-    'post_type' => 'slot',
-    'posts_per_page' => 6,
-    'post_status' => 'publish'
-));
-
-// Include grid template
-
-```
-
-## File Structure
-
-```
-slots/
-├── slots.php                          # Main plugin file
-├── README.md                          # This documentation
-├── includes/
-│   ├── class-slots-admin.php         # Admin functionality
-│   ├── class-slots-public.php        # Public-facing features
-│   ├── class-slots-shortcodes.php    # Shortcode handlers
-│   └── class-slots-template-manager.php # Template management
-├── templates/
-│   ├── slots-grid.php                # Default grid template
-
-│   └── slot-card.php                 # Individual slot card
-├── assets/
-│   ├── css/
-│   │   └── slots-public.css         # Public styles
-│   └── js/
-│       └── slots-public.js          # Public JavaScript
-└── languages/                        # Translation files
-```
-
-## Customization
-
-### Adding Custom Fields
-Extend the slot meta fields by adding to the `slot` post type:
-
-```php
-// Add custom meta field
-add_post_meta_box('custom_field', 'Custom Field', 'slot');
-
-// Display in template
-$custom_value = get_post_meta($slot_id, 'custom_field', true);
-```
-
-### Custom CSS
-Override default styles by adding CSS to your theme:
-
-```css
-/* Custom slot card styling */
-.slot-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-}
-
-/* Custom grid layout */
-.slots-grid {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-}
-```
-
-### JavaScript Extensions
-Extend the grid functionality with custom JavaScript:
-
-```javascript
-// Custom slot card click handler
-jQuery(document).on('click', '.slot-card', function() {
-    var slotId = jQuery(this).data('slot-id');
-    // Custom functionality
-});
-
-// Extend sorting options
-jQuery(document).on('change', '.slots-sort-select', function() {
-    var sort = jQuery(this).val();
-    // Custom sorting logic
-});
-```
-
-## AJAX Endpoints
-
-### Load Slots Grid
-**Action**: `load_slots_grid`
-**Parameters**:
-- `page`: Page number (integer)
-- `limit`: Slots per page (integer)
-- `sort`: Sorting method (string)
-- `nonce`: Security nonce (string)
-
-**Response**:
-```json
-{
-    "success": true,
-    "data": {
-        "html": "Generated HTML content",
-        "has_more": true
-    }
-}
-```
-
-## Hooks and Filters
-
-### Actions
-- `slots_before_grid_display` - Before grid rendering
-- `slots_after_grid_display` - After grid rendering
-- `slots_before_slot_card` - Before individual slot card
-- `slots_after_slot_card` - After individual slot card
-
-### Filters
-- `slots_grid_query_args` - Modify grid query arguments
-- `slots_card_data` - Modify slot card data before rendering
-- `slots_grid_template_file` - Override template file selection
-
-## Troubleshooting
-
-### Common Issues
-
-**Grid not displaying slots:**
-- Check if slots exist in the `slot` post type
-- Verify shortcode syntax
-- Check browser console for JavaScript errors
-
-**Custom markup not working:**
-- Ensure markup is saved in admin settings
-- Check placeholder syntax
-- Verify template is set to "editor"
-
-**AJAX loading not working:**
-- Check nonce verification
-- Verify AJAX action is registered
-- Check browser network tab for errors
-
-### Debug Mode
-Enable debug mode in WordPress to see detailed error messages:
-
-```php
-// In wp-config.php
-define('WP_DEBUG', true);
-define('WP_DEBUG_LOG', true);
-```
-
-## Performance Tips
-
-1. **Use appropriate limits**: Don't load too many slots at once
-2. **Enable caching**: Use WordPress caching plugins
-3. **Optimize images**: Compress slot thumbnails
-4. **Lazy loading**: Images are automatically lazy-loaded
-5. **Minimize AJAX calls**: Use reasonable pagination limits
-
-## Browser Support
-
-- Chrome 60+
-- Firefox 55+
-- Safari 12+
-- Edge 79+
-- Internet Explorer 11+ (with polyfills)
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## License
-
-This plugin is licensed under the GPL v2 or later.
-
-## Support
-
-For support and feature requests, please create an issue in the repository or contact the development team.
-
----
-
-**Version**: 1.0.0  
-**Last Updated**: December 2024  
-**WordPress Version**: 5.0+  
-**PHP Version**: 7.4+
