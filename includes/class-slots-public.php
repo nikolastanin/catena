@@ -31,7 +31,35 @@ class Slots_Public {
         add_action('wp_ajax_nopriv_load_slots_grid', array($this, 'load_slots_grid'));
         
         // Filter content for slot posts to show slot_detail shortcode when no content
-        //add_filter('the_content', array($this, 'filter_slot_content'));
+        add_filter('the_content', array($this, 'filter_slot_content'));
+    }
+
+    /**
+     * Summary of filter_slot_contents
+     * stupid way to render slot cpt content but it works...
+     * @param mixed $content
+     */
+    public function filter_slot_content($content) {
+        static $is_processing = false;
+        
+        // Prevent infinite loop
+        if ($is_processing) {
+            return $content;
+        }
+        
+        if (is_singular('slot')) {
+            if (str_contains($content, '[slot_detail]')) {
+                // Set flag to prevent recursion
+                $is_processing = true;
+                return $content;
+            } else {
+                // Set flag to prevent recursion
+                $is_processing = true;
+                return '[slot_detail]' . $content;
+            }
+        }
+        
+        return $content;
     }
     
     /**
