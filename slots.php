@@ -21,8 +21,12 @@ if (!defined('ABSPATH')) {
 define('SLOTS_PLUGIN_FILE', __FILE__);
 define('SLOTS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('SLOTS_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('SLOTS_PLUGIN_VERSION', '1.0.0');
+// define('SLOTS_PLUGIN_VERSION', '1.0.0');
+define('SLOTS_PLUGIN_VERSION', time());
 define('SLOTS_PLUGIN_BASENAME', plugin_basename(__FILE__));
+
+// Include configuration
+require_once SLOTS_PLUGIN_DIR . 'includes/config.php';
 
 // Include required files
 require_once SLOTS_PLUGIN_DIR . 'includes/class-slots.php';
@@ -32,6 +36,7 @@ require_once SLOTS_PLUGIN_DIR . 'includes/class-slots-post-types.php';
 require_once SLOTS_PLUGIN_DIR . 'includes/class-slots-shortcodes.php';
 require_once SLOTS_PLUGIN_DIR . 'includes/class-slots-themes.php';
 require_once SLOTS_PLUGIN_DIR . 'includes/class-slots-template-manager.php';
+require_once SLOTS_PLUGIN_DIR . 'includes/class-slots-cache.php';
 
 // Initialize the plugin
 function slots_init() {
@@ -40,6 +45,9 @@ function slots_init() {
     
     // Initialize shortcodes
     new Slots_Shortcodes();
+    
+    // Initialize cache system
+    new Slots_Cache();
 }
 add_action('plugins_loaded', 'slots_init');
 

@@ -33,11 +33,11 @@ class Slots_Shortcodes {
      */
     public function slots_grid_shortcode($atts) {
         $atts = shortcode_atts(array(
-            'limit' => 12,
-            'sort' => 'recent', // recent, random
+            'limit' => defined('SLOTS_DEFAULT_LIMIT') ? SLOTS_DEFAULT_LIMIT : 12,
+            'sort' => defined('SLOTS_DEFAULT_SORT') ? SLOTS_DEFAULT_SORT : 'recent', // recent, random
             'class' => '',
-            'show_filters' => 'true',
-            'show_pagination' => 'true',
+            'show_filters' => defined('SLOTS_ENABLE_GRID_FILTERS') && SLOTS_ENABLE_GRID_FILTERS ? 'true' : 'false',
+            'show_pagination' => defined('SLOTS_ENABLE_PAGINATION') && SLOTS_ENABLE_PAGINATION ? 'true' : 'false',
             'template' => 'auto' // auto, default, editor
         ), $atts, 'slots_grid');
         
@@ -106,6 +106,13 @@ class Slots_Shortcodes {
      * Get slots for grid display
      */
     private function get_slots_for_grid($atts) {
+        // Check cache first
+        $cache_key = 'slots_grid_' . $atts['sort'] . '_' . $atts['limit'];
+        $cached_slots = Slots_Cache::get($cache_key);
+        if (false !== $cached_slots) {
+            return $cached_slots;
+        }
+
         $args = array(
             'post_type' => 'slot',
             'post_status' => 'publish',
@@ -151,6 +158,8 @@ class Slots_Shortcodes {
             }
             wp_reset_postdata();
         }
+        // Cache the results
+        Slots_Cache::set($cache_key, $slots);
         
         return $slots;
     }
@@ -161,6 +170,14 @@ class Slots_Shortcodes {
     private function get_slot_detail($slot_id) {
         if (empty($slot_id)) {
             return false;
+        }
+        
+        // Check cache first
+        $cache_key = 'slot_detail_' . $slot_id;
+        $cached_slot = Slots_Cache::get($cache_key);
+        
+        if (false !== $cached_slot) {
+            return $cached_slot;
         }
         
         // Try to get by slot ID first
@@ -189,7 +206,7 @@ class Slots_Shortcodes {
         
         $post_id = $post->ID;
         
-        return array(
+        $slot_data = array(
             'id' => $post_id,
             'title' => get_the_title($post_id),
             'excerpt' => get_the_excerpt($post_id),
@@ -204,6 +221,11 @@ class Slots_Shortcodes {
             'max_wager' => Slots_Admin::get_slot_meta($post_id, 'max_wager'),
             'modified' => get_the_modified_date('U', $post_id)
         );
+        
+        // Cache the slot data
+        Slots_Cache::set($cache_key, $slot_data);
+        
+        return $slot_data;
     }
     
     /**

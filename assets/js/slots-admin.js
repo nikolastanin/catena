@@ -4,7 +4,7 @@
  * @package Slots
  */
 
-(function($) {
+(function() {
     'use strict';
 
     // Slots Admin Plugin Class
@@ -17,42 +17,54 @@
 
         bindEvents: function() {
             // Meta box field changes
-            $(document).on('change', '.slots-meta-field input, .slots-meta-field select', function() {
-                SlotsAdmin.handleMetaFieldChange($(this));
+            document.addEventListener('change', function(e) {
+                if (e.target.matches('.slots-meta-field input, .slots-meta-field select')) {
+                    SlotsAdmin.handleMetaFieldChange(e.target);
+                }
             });
 
             // Quick edit functionality
-            $(document).on('click', '.quick-edit-slot', function(e) {
-                e.preventDefault();
-                var slotId = $(this).data('slot-id');
-                SlotsAdmin.openQuickEdit(slotId);
+            document.addEventListener('click', function(e) {
+                if (e.target.matches('.quick-edit-slot')) {
+                    e.preventDefault();
+                    var slotId = e.target.dataset.slotId;
+                    SlotsAdmin.openQuickEdit(slotId);
+                }
             });
 
             // Bulk actions
-            $(document).on('change', '#bulk-action-selector-top, #bulk-action-selector-bottom', function() {
-                SlotsAdmin.handleBulkActionChange($(this));
+            document.addEventListener('change', function(e) {
+                if (e.target.matches('#bulk-action-selector-top, #bulk-action-selector-bottom')) {
+                    SlotsAdmin.handleBulkActionChange(e.target);
+                }
             });
 
             // Settings page functionality
-            $(document).on('change', '.slots-settings-field input[type="checkbox"]', function() {
-                SlotsAdmin.handleSettingChange($(this));
+            document.addEventListener('change', function(e) {
+                if (e.target.matches('.slots-settings-field input[type="checkbox"]')) {
+                    SlotsAdmin.handleSettingChange(e.target);
+                }
             });
 
             // Dashboard widget refresh
-            $(document).on('click', '.refresh-slots-stats', function(e) {
-                e.preventDefault();
-                SlotsAdmin.refreshStats();
+            document.addEventListener('click', function(e) {
+                if (e.target.matches('.refresh-slots-stats')) {
+                    e.preventDefault();
+                    SlotsAdmin.refreshStats();
+                }
             });
 
             // Post type filters
-            $(document).on('change', '.slots-filter select', function() {
-                SlotsAdmin.filterSlots($(this));
+            document.addEventListener('change', function(e) {
+                if (e.target.matches('.slots-filter select')) {
+                    SlotsAdmin.filterSlots(e.target);
+                }
             });
 
             // Date picker initialization
-            $(document).on('focus', '.slots-date-picker', function() {
-                if (!$(this).hasClass('ui-datepicker')) {
-                    SlotsAdmin.initDatePicker($(this));
+            document.addEventListener('focus', function(e) {
+                if (e.target.matches('.slots-date-picker') && !e.target.classList.contains('ui-datepicker')) {
+                    SlotsAdmin.initDatePicker(e.target);
                 }
             });
         },
@@ -69,9 +81,9 @@
         },
 
         handleMetaFieldChange: function(field) {
-            var fieldName = field.attr('name');
-            var fieldValue = field.val();
-            var postId = $('#post_ID').val();
+            var fieldName = field.name;
+            var fieldValue = field.value;
+            var postId = document.getElementById('post_ID') ? document.getElementById('post_ID').value : '';
 
             // Auto-save meta field
             this.autoSaveMetaField(postId, fieldName, fieldValue);
@@ -81,25 +93,34 @@
         },
 
         autoSaveMetaField: function(postId, fieldName, fieldValue) {
-            $.ajax({
-                url: ajaxurl,
-                type: 'POST',
-                data: {
-                    action: 'slots_auto_save_meta',
-                    post_id: postId,
-                    field_name: fieldName,
-                    field_value: fieldValue,
-                    nonce: slots_admin.nonce
-                },
-                success: function(response) {
-                    if (response.success) {
-                        SlotsAdmin.showNotice('Field updated successfully.', 'success');
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', ajaxurl, true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    try {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            SlotsAdmin.showNotice('Field updated successfully.', 'success');
+                        }
+                    } catch (e) {
+                        SlotsAdmin.showNotice('Failed to update field.', 'error');
                     }
-                },
-                error: function() {
+                } else {
                     SlotsAdmin.showNotice('Failed to update field.', 'error');
                 }
-            });
+            };
+
+            xhr.onerror = function() {
+                SlotsAdmin.showNotice('Failed to update field.', 'error');
+            };
+
+            var data = 'action=slots_auto_save_meta&post_id=' + encodeURIComponent(postId) +
+                '&field_name=' + encodeURIComponent(fieldName) +
+                '&field_value=' + encodeURIComponent(fieldValue) +
+                '&nonce=' + encodeURIComponent(slots_admin.nonce);
+            xhr.send(data);
         },
 
         updateRelatedFields: function(fieldName, fieldValue) {
@@ -116,132 +137,176 @@
 
         calculateDuration: function(timeValue) {
             // Simple duration calculation logic
-            var durationField = $('input[name="_slot_duration"]');
-            if (durationField.length && timeValue) {
+            var durationField = document.querySelector('input[name="_slot_duration"]');
+            if (durationField && timeValue) {
                 // Default duration of 60 minutes
-                durationField.val('60');
+                durationField.value = '60';
             }
         },
 
         updateStatusIndicator: function(available) {
-            var statusField = $('.slots-status-indicator');
-            if (statusField.length) {
+            var statusField = document.querySelector('.slots-status-indicator');
+            if (statusField) {
                 if (available === '1') {
-                    statusField.removeClass('booked').addClass('available').text('Available');
+                    statusField.classList.remove('booked');
+                    statusField.classList.add('available');
+                    statusField.textContent = 'Available';
                 } else {
-                    statusField.removeClass('available').addClass('booked').text('Booked');
+                    statusField.classList.remove('available');
+                    statusField.classList.add('booked');
+                    statusField.textContent = 'Booked';
                 }
             }
         },
 
         openQuickEdit: function(slotId) {
             // Load slot data for quick edit
-            $.ajax({
-                url: ajaxurl,
-                type: 'POST',
-                data: {
-                    action: 'slots_get_slot_data',
-                    slot_id: slotId,
-                    nonce: slots_admin.nonce
-                },
-                success: function(response) {
-                    if (response.success) {
-                        SlotsAdmin.populateQuickEditForm(response.data);
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', ajaxurl, true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    try {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            SlotsAdmin.populateQuickEditForm(response.data);
+                        }
+                    } catch (e) {
+                        console.error('Failed to parse response');
                     }
                 }
-            });
+            };
+
+            var data = 'action=slots_get_slot_data&slot_id=' + encodeURIComponent(slotId) +
+                '&nonce=' + encodeURIComponent(slots_admin.nonce);
+            xhr.send(data);
         },
 
         populateQuickEditForm: function(slotData) {
             // Populate quick edit form fields
-            $('#quick-edit-slot-time').val(slotData.time);
-            $('#quick-edit-slot-duration').val(slotData.duration);
-            $('#quick-edit-slot-status').val(slotData.status);
+            var timeField = document.getElementById('quick-edit-slot-time');
+            var durationField = document.getElementById('quick-edit-slot-duration');
+            var statusField = document.getElementById('quick-edit-slot-status');
+            var form = document.getElementById('quick-edit-slot-form');
+
+            if (timeField) timeField.value = slotData.time;
+            if (durationField) durationField.value = slotData.duration;
+            if (statusField) statusField.value = slotData.status;
 
             // Show quick edit form
-            $('#quick-edit-slot-form').show();
+            if (form) form.style.display = 'block';
         },
 
         handleBulkActionChange: function(selector) {
-            var action = selector.val();
-            var submitButton = selector.closest('.tablenav').find('.button');
+            var action = selector.value;
+            var submitButton = selector.closest('.tablenav').querySelector('.button');
 
             if (action && action !== '-1') {
-                submitButton.prop('disabled', false);
+                submitButton.disabled = false;
             } else {
-                submitButton.prop('disabled', true);
+                submitButton.disabled = true;
             }
         },
 
         handleSettingChange: function(checkbox) {
-            var settingName = checkbox.attr('name');
-            var settingValue = checkbox.is(':checked') ? '1' : '0';
+            var settingName = checkbox.name;
+            var settingValue = checkbox.checked ? '1' : '0';
 
             // Auto-save setting
             this.autoSaveSetting(settingName, settingValue);
         },
 
         autoSaveSetting: function(settingName, settingValue) {
-            $.ajax({
-                url: ajaxurl,
-                type: 'POST',
-                data: {
-                    action: 'slots_auto_save_setting',
-                    setting_name: settingName,
-                    setting_value: settingValue,
-                    nonce: slots_admin.nonce
-                },
-                success: function(response) {
-                    if (response.success) {
-                        SlotsAdmin.showNotice('Setting updated successfully.', 'success');
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', ajaxurl, true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    try {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            SlotsAdmin.showNotice('Setting updated successfully.', 'success');
+                        }
+                    } catch (e) {
+                        console.error('Failed to parse response');
                     }
                 }
-            });
+            };
+
+            var data = 'action=slots_auto_save_setting&setting_name=' + encodeURIComponent(settingName) +
+                '&setting_value=' + encodeURIComponent(settingValue) +
+                '&nonce=' + encodeURIComponent(slots_admin.nonce);
+            xhr.send(data);
         },
 
         refreshStats: function() {
-            var statsContainer = $('.slots-stats-grid');
-            var refreshButton = $('.refresh-slots-stats');
+            var statsContainer = document.querySelector('.slots-stats-grid');
+            var refreshButton = document.querySelector('.refresh-slots-stats');
 
-            refreshButton.prop('disabled', true).text('Refreshing...');
+            if (refreshButton) {
+                refreshButton.disabled = true;
+                refreshButton.textContent = 'Refreshing...';
+            }
 
-            $.ajax({
-                url: ajaxurl,
-                type: 'POST',
-                data: {
-                    action: 'slots_refresh_stats',
-                    nonce: slots_admin.nonce
-                },
-                success: function(response) {
-                    if (response.success) {
-                        SlotsAdmin.updateStatsDisplay(response.data);
-                        SlotsAdmin.showNotice('Statistics updated successfully.', 'success');
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', ajaxurl, true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    try {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            SlotsAdmin.updateStatsDisplay(response.data);
+                            SlotsAdmin.showNotice('Statistics updated successfully.', 'success');
+                        }
+                    } catch (e) {
+                        SlotsAdmin.showNotice('Failed to refresh statistics.', 'error');
                     }
-                },
-                error: function() {
+                } else {
                     SlotsAdmin.showNotice('Failed to refresh statistics.', 'error');
-                },
-                complete: function() {
-                    refreshButton.prop('disabled', false).text('Refresh Stats');
                 }
-            });
+
+                if (refreshButton) {
+                    refreshButton.disabled = false;
+                    refreshButton.textContent = 'Refresh Stats';
+                }
+            };
+
+            xhr.onerror = function() {
+                SlotsAdmin.showNotice('Failed to refresh statistics.', 'error');
+                if (refreshButton) {
+                    refreshButton.disabled = false;
+                    refreshButton.textContent = 'Refresh Stats';
+                }
+            };
+
+            var data = 'action=slots_refresh_stats&nonce=' + encodeURIComponent(slots_admin.nonce);
+            xhr.send(data);
         },
 
         updateStatsDisplay: function(stats) {
             // Update each stat card
-            $('.slots-stat-card').each(function() {
-                var card = $(this);
-                var statType = card.find('h3').text().toLowerCase().replace(/\s+/g, '_');
+            var statCards = document.querySelectorAll('.slots-stat-card');
+            statCards.forEach(function(card) {
+                var titleElement = card.querySelector('h3');
+                var statNumberElement = card.querySelector('.stat-number');
 
-                if (stats[statType] !== undefined) {
-                    card.find('.stat-number').text(stats[statType]);
+                if (titleElement && statNumberElement) {
+                    var statType = titleElement.textContent.toLowerCase().replace(/\s+/g, '_');
+
+                    if (stats[statType] !== undefined) {
+                        statNumberElement.textContent = stats[statType];
+                    }
                 }
             });
         },
 
         filterSlots: function(filterSelect) {
-            var filterValue = filterSelect.val();
-            var filterType = filterSelect.data('filter-type');
+            var filterValue = filterSelect.value;
+            var filterType = filterSelect.dataset.filterType;
 
             // Reload page with filter parameters
             var currentUrl = new URL(window.location);
@@ -250,50 +315,77 @@
         },
 
         initDatePicker: function(field) {
-            field.datepicker({
-                dateFormat: 'yy-mm-dd',
-                changeMonth: true,
-                changeYear: true,
-                yearRange: '-10:+10',
-                showButtonPanel: true,
-                closeText: 'Close',
-                currentText: 'Today',
-                monthNames: ['January', 'February', 'March', 'April', 'May', 'June',
-                    'July', 'August', 'September', 'October', 'November', 'December'
-                ],
-                monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-                ],
-                dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-                dayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-                dayNamesMin: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
-            });
+            // Check if jQuery UI datepicker is available
+            if (typeof field.datepicker === 'function') {
+                field.datepicker({
+                    dateFormat: 'yy-mm-dd',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: '-10:+10',
+                    showButtonPanel: true,
+                    closeText: 'Close',
+                    currentText: 'Today',
+                    monthNames: ['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'
+                    ],
+                    monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+                    ],
+                    dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                    dayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                    dayNamesMin: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+                });
+            } else {
+                // Fallback to native date input if jQuery UI is not available
+                field.type = 'date';
+            }
         },
 
         initTooltips: function() {
-            $('[data-tooltip]').tooltip({
-                position: { my: 'left+5 center', at: 'right center' },
-                show: { effect: 'fadeIn', duration: 200 },
-                hide: { effect: 'fadeOut', duration: 200 }
+            // Check if jQuery UI tooltip is available
+            var tooltipElements = document.querySelectorAll('[data-tooltip]');
+            tooltipElements.forEach(function(element) {
+                if (typeof element.tooltip === 'function') {
+                    element.tooltip({
+                        position: { my: 'left+5 center', at: 'right center' },
+                        show: { effect: 'fadeIn', duration: 200 },
+                        hide: { effect: 'fadeOut', duration: 200 }
+                    });
+                } else {
+                    // Fallback to native title attribute
+                    element.title = element.dataset.tooltip;
+                }
             });
         },
 
         initSortableTables: function() {
-            $('.slots-sortable-table').tablesorter({
-                sortList: [
-                    [0, 0]
-                ],
-                headers: {
-                    0: { sorter: 'text' },
-                    1: { sorter: 'text' },
-                    2: { sorter: 'text' },
-                    3: { sorter: 'text' }
+            // Check if tablesorter plugin is available
+            var sortableTables = document.querySelectorAll('.slots-sortable-table');
+            sortableTables.forEach(function(table) {
+                if (typeof table.tablesorter === 'function') {
+                    table.tablesorter({
+                        sortList: [
+                            [0, 0]
+                        ],
+                        headers: {
+                            0: { sorter: 'text' },
+                            1: { sorter: 'text' },
+                            2: { sorter: 'text' },
+                            3: { sorter: 'text' }
+                        }
+                    });
                 }
             });
         },
 
         initColorPickers: function() {
-            $('.slots-color-picker').wpColorPicker();
+            // Check if WordPress color picker is available
+            var colorPickers = document.querySelectorAll('.slots-color-picker');
+            colorPickers.forEach(function(picker) {
+                if (typeof picker.wpColorPicker === 'function') {
+                    picker.wpColorPicker();
+                }
+            });
         },
 
         showNotice: function(message, type) {
@@ -301,15 +393,33 @@
             var noticeHtml = '<div class="' + noticeClass + ' is-dismissible"><p>' + message + '</p></div>';
 
             // Remove existing notices
-            $('.slots-notice').remove();
+            var existingNotices = document.querySelectorAll('.slots-notice');
+            existingNotices.forEach(function(notice) {
+                notice.remove();
+            });
 
             // Add new notice
-            $('.wrap h1').after(noticeHtml);
+            var wrapHeader = document.querySelector('.wrap h1');
+            if (wrapHeader) {
+                var noticeElement = document.createElement('div');
+                noticeElement.innerHTML = noticeHtml;
+                var notice = noticeElement.firstElementChild;
+                notice.classList.add('slots-notice');
+                wrapHeader.parentNode.insertBefore(notice, wrapHeader.nextSibling);
 
-            // Auto-dismiss after 5 seconds
-            setTimeout(function() {
-                $('.slots-notice').fadeOut();
-            }, 5000);
+                // Auto-dismiss after 5 seconds
+                setTimeout(function() {
+                    if (notice && notice.parentNode) {
+                        notice.style.opacity = '0';
+                        notice.style.transition = 'opacity 0.5s';
+                        setTimeout(function() {
+                            if (notice && notice.parentNode) {
+                                notice.remove();
+                            }
+                        }, 500);
+                    }
+                }, 5000);
+            }
         },
 
         // Utility functions
@@ -333,11 +443,15 @@
     };
 
     // Initialize plugin when DOM is ready
-    $(document).ready(function() {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            SlotsAdmin.init();
+        });
+    } else {
         SlotsAdmin.init();
-    });
+    }
 
     // Make plugin globally accessible
     window.SlotsAdmin = SlotsAdmin;
 
-})(jQuery);
+})();

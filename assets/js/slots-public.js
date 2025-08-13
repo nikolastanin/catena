@@ -4,7 +4,7 @@
  * @package Slots
  */
 
-(function($) {
+(function() {
     'use strict';
 
     var Slots = {
@@ -19,78 +19,102 @@
          * Bind events
          */
         bindEvents: function() {
-            $(document).on('change', '.slots-sort-select', this.handleSortChange);
-            $(document).on('change', '.slots-limit-select', this.handleLimitChange);
-            $(document).on('click', '.load-more-slots', this.handleLoadMore);
+            document.addEventListener('change', this.handleSortChange.bind(this));
+            document.addEventListener('change', this.handleLimitChange.bind(this));
+            document.addEventListener('click', this.handleLoadMore.bind(this));
         },
 
         /**
          * Handle sort change
          */
-        handleSortChange: function() {
-            var select = $(this);
-            var container = select.closest('.slots-container');
-            var sort = select.val();
-            var limit = container.find('.slots-limit-select').val();
+        handleSortChange: function(event) {
+            if (!event.target.classList.contains('slots-sort-select')) return;
 
-            Slots.reloadSlots(container, { sort: sort, limit: limit });
+            var select = event.target;
+            var container = this.findClosest(select, '.slots-container');
+            var sort = select.value;
+            var limitSelect = container.querySelector('.slots-limit-select');
+            var limit = limitSelect ? limitSelect.value : '10';
+
+            this.reloadSlots(container, { sort: sort, limit: limit });
         },
 
         /**
          * Handle limit change
          */
-        handleLimitChange: function() {
-            var select = $(this);
-            var container = select.closest('.slots-container');
-            var limit = select.val();
-            var sort = container.find('.slots-sort-select').val();
+        handleLimitChange: function(event) {
+            if (!event.target.classList.contains('slots-limit-select')) return;
+
+            var select = event.target;
+            var container = this.findClosest(select, '.slots-container');
+            var limit = select.value;
+            var sortSelect = container.querySelector('.slots-sort-select');
+            var sort = sortSelect ? sortSelect.value : 'date';
 
             // Update container data
-            container.data('limit', limit);
+            container.dataset.limit = limit;
 
             // Update load more button data
-            container.find('.load-more-slots').data('limit', limit).data('page', 1);
+            var loadMoreBtn = container.querySelector('.load-more-slots');
+            if (loadMoreBtn) {
+                loadMoreBtn.dataset.limit = limit;
+                loadMoreBtn.dataset.page = '1';
+            }
 
-            Slots.reloadSlots(container, { sort: sort, limit: limit });
+            this.reloadSlots(container, { sort: sort, limit: limit });
         },
 
         /**
          * Reload slots with new filters
          */
         reloadSlots: function(container, filters) {
-            var grid = container.find('.slots-grid');
+            var grid = container.querySelector('.slots-grid');
 
             // Show loading state
-            grid.html('<div class="slots-loading">Loading...</div>');
+            grid.innerHTML = '<div class="slots-loading">Loading...</div>';
 
             // Make AJAX request
-            $.ajax({
-                url: '/wp-admin/admin-ajax.php',
+            this.makeAjaxRequest({
+                url: window.slots_ajax.ajax_url,
                 type: 'POST',
                 data: {
                     action: 'load_more_slots',
-                    nonce: container.find('.slots-grid').data('nonce'),
+                    nonce: grid.dataset.nonce,
                     page: 1,
                     limit: parseInt(filters.limit),
                     sort: filters.sort
                 },
                 success: function(response) {
                     if (response.success) {
-                        grid.html(response.data.html);
+                        grid.innerHTML = response.data.html;
 
                         // Show/hide load more button
-                        var loadMoreBtn = container.find('.load-more-slots');
+                        var loadMoreBtn = container.querySelector('.load-more-slots');
                         if (response.data.has_more) {
-                            loadMoreBtn.show().data('page', 1);
+                            if (loadMoreBtn) {
+                                loadMoreBtn.style.display = 'block';
+                                loadMoreBtn.dataset.page = '1';
+                            }
                         } else {
-                            loadMoreBtn.hide();
+                            if (loadMoreBtn) {
+                                loadMoreBtn.style.display = 'none';
+                            }
                         }
                     } else {
-                        grid.html('<div class="slots-error">Error loading slots. Please try again.</div>');
+                        console.error('AJAX Error:', response.data);
+                        var errorMessage = response.data && response.data.message ? response.data.message : window.slots_ajax.strings.error;
+                        grid.innerHTML = '<div class="slots-error">' + errorMessage + '</div>';
                     }
                 },
-                error: function() {
-                    grid.html('<div class="slots-error">Error loading slots. Please try again.</div>');
+                error: function(xhr, status, error) {
+                    console.error('AJAX Request Failed:', status, error);
+                    var errorMessage = window.slots_ajax.strings.error;
+                    if (xhr.status === 403) {
+                        errorMessage = 'Access denied. Please refresh the page and try again.';
+                    } else if (xhr.status === 500) {
+                        errorMessage = 'Server error. Please try again later.';
+                    }
+                    grid.innerHTML = '<div class="slots-error">' + errorMessage + '</div>';
                 }
             });
         },
@@ -99,28 +123,32 @@
          * Load more slots
          */
         loadMoreSlots: function(container, page, callback) {
-            var sort = container.find('.slots-sort-select').val();
-            var limit = parseInt(container.find('.slots-limit-select').val());
+            var sortSelect = container.querySelector('.slots-sort-select');
+            var limitSelect = container.querySelector('.slots-limit-select');
+            var sort = sortSelect ? sortSelect.value : 'date';
+            var limit = limitSelect ? parseInt(limitSelect.value) : 10;
 
-            $.ajax({
-                url: '/wp-admin/admin-ajax.php',
+            this.makeAjaxRequest({
+                url: window.slots_ajax.ajax_url,
                 type: 'POST',
                 data: {
                     action: 'load_more_slots',
-                    nonce: container.find('.slots-grid').data('nonce'),
+                    nonce: container.querySelector('.slots-grid').dataset.nonce,
                     page: page,
                     limit: limit,
                     sort: sort
                 },
                 success: function(response) {
                     if (response.success) {
-                        container.find('.slots-grid').append(response.data.html);
+                        container.querySelector('.slots-grid').insertAdjacentHTML('beforeend', response.data.html);
                         callback(response.data.has_more);
                     } else {
+                        console.error('Load More Error:', response.data);
                         callback(false);
                     }
                 },
-                error: function() {
+                error: function(xhr, status, error) {
+                    console.error('Load More AJAX Failed:', status, error);
                     callback(false);
                 }
             });
@@ -129,37 +157,98 @@
         /**
          * Handle load more
          */
-        handleLoadMore: function(e) {
-            e.preventDefault();
+        handleLoadMore: function(event) {
+            if (!event.target.classList.contains('load-more-slots')) return;
 
-            var button = $(this);
-            var container = button.closest('.slots-container');
-            var currentPage = parseInt(button.data('page'));
+            event.preventDefault();
+
+            var button = event.target;
+            var container = this.findClosest(button, '.slots-container');
+            var currentPage = parseInt(button.dataset.page) || 1;
             var nextPage = currentPage + 1;
 
             // Disable button and show loading
-            button.prop('disabled', true).text('Loading...');
+            button.disabled = true;
+            button.textContent = 'Loading...';
 
             // Load more slots
-            Slots.loadMoreSlots(container, nextPage, function(hasMore) {
-                button.data('page', nextPage);
-                button.prop('disabled', false);
+            this.loadMoreSlots(container, nextPage, function(hasMore) {
+                button.dataset.page = nextPage;
+                button.disabled = false;
 
                 if (!hasMore) {
-                    button.hide();
+                    button.style.display = 'none';
                 } else {
-                    button.text('Load More Slots');
+                    button.textContent = 'Load More Slots';
                 }
             });
+        },
+
+        /**
+         * Find closest parent element with specified selector
+         */
+        findClosest: function(element, selector) {
+            while (element && element !== document) {
+                if (element.matches && element.matches(selector)) {
+                    return element;
+                }
+                element = element.parentElement;
+            }
+            return null;
+        },
+
+        /**
+         * Make AJAX request using fetch API
+         */
+        makeAjaxRequest: function(options) {
+            var formData = new FormData();
+
+            // Add data to FormData
+            for (var key in options.data) {
+                if (options.data.hasOwnProperty(key)) {
+                    formData.append(key, options.data[key]);
+                }
+            }
+
+            fetch(options.url, {
+                    method: options.type || 'POST',
+                    body: formData
+                })
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('HTTP ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(function(data) {
+                    if (options.success) {
+                        options.success(data);
+                    }
+                })
+                .catch(function(error) {
+                    if (options.error) {
+                        var xhr = { status: 500 };
+                        if (error.message.includes('HTTP 403')) {
+                            xhr.status = 403;
+                        } else if (error.message.includes('HTTP 500')) {
+                            xhr.status = 500;
+                        }
+                        options.error(xhr, 'error', error.message);
+                    }
+                });
         }
     };
 
     // Initialize when document is ready
-    $(document).ready(function() {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            Slots.init();
+        });
+    } else {
         Slots.init();
-    });
+    }
 
     // Make Slots available globally
     window.Slots = Slots;
 
-})(jQuery);
+})();

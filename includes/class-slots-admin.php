@@ -29,6 +29,8 @@ class Slots_Admin {
         add_action('save_post', array($this, 'save_meta_boxes'));
         add_action('wp_insert_post', array($this, 'auto_generate_slot_id'), 10, 3);
         add_action('admin_init', array($this, 'maybe_assign_slot_ids_to_existing'));
+        
+
     }
     
     /**
@@ -103,6 +105,8 @@ class Slots_Admin {
             array($this, 'card_template_section_callback'),
             'slots-settings'
         );
+        
+
         
 
         
@@ -214,6 +218,8 @@ class Slots_Admin {
 
         
 
+        
+
     }
     
     /**
@@ -233,7 +239,7 @@ class Slots_Admin {
 
     
 
-    
+    // todo: maybe use blade template for this?
     /**
      * Editor section callback
      */
@@ -284,6 +290,8 @@ class Slots_Admin {
         echo '</div>';
     }
     
+
+    
     /**
      * Grid Editor section callback
      */
@@ -308,6 +316,8 @@ class Slots_Admin {
             case 'show_filters_default':
                 echo '<label for="' . esc_attr($field_name) . '">' . __('Show filter controls by default in grid view', 'slots') . '</label>';
                 break;
+                
+
                 
             case 'show_pagination_default':
                 echo '<label for="' . esc_attr($field_name) . '">' . __('Show pagination controls by default', 'slots') . '</label>';
@@ -895,20 +905,37 @@ class Slots_Admin {
      * Render slot card using custom template or default
      */
     public static function render_slot_card($slot_data) {
+        // Check cache first
+        $cache_key = 'slot_card_' . $slot_data['id'];
+        $cached_card = Slots_Cache::get($cache_key);
+        
+        if (false !== $cached_card) {
+            return $cached_card;
+        }
+        
         $settings = get_option('slots_settings', array());
         $custom_template = isset($settings['slot_card_template']) ? $settings['slot_card_template'] : '';
         $override_enabled = isset($settings['slot_card_template_override']) ? $settings['slot_card_template_override'] : 0;
+        
+        $rendered_card = '';
         
         if ($override_enabled && !empty($custom_template)) {
             // Use custom template
             $processed_template = self::process_slot_card_template($custom_template, $slot_data);
             if ($processed_template) {
-                return $processed_template;
+                $rendered_card = $processed_template;
             }
         }
         
-        // Fallback to default template
-        return self::render_default_slot_card($slot_data);
+        if (empty($rendered_card)) {
+            // Fallback to default template
+            $rendered_card = self::render_default_slot_card($slot_data);
+        }
+        
+        // Cache the rendered card
+        Slots_Cache::set($cache_key, $rendered_card);
+        
+        return $rendered_card;
     }
     
     /**
@@ -1014,4 +1041,6 @@ class Slots_Admin {
     public function demo_page() {
         include SLOTS_PLUGIN_DIR . 'templates/demo-page.php';
     }
+    
+
 }

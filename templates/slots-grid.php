@@ -25,7 +25,7 @@ $theme_class = !empty($theme_class) ? ' ' . $theme_class : '';
 
 <div class="slots-container<?php echo $custom_class . $theme_class; ?>" data-limit="<?php echo esc_attr($atts['limit']); ?>" data-sort="<?php echo esc_attr($atts['sort']); ?>">
     
-    <?php if ($show_filters): ?>
+    <?php if ($show_filters && defined('SLOTS_ENABLE_GRID_FILTERS') && SLOTS_ENABLE_GRID_FILTERS): ?>
     <div class="slots-controls">
         <div class="slots-filter">
             <label for="slots-sort"><?php _e('Sort by:', 'slots'); ?></label>
@@ -61,7 +61,7 @@ $theme_class = !empty($theme_class) ? ' ' . $theme_class : '';
             <?php endforeach; ?>
         </div>
         
-        <?php if ($show_pagination && count($slots) >= intval($atts['limit'])): ?>
+        <?php if ($show_pagination && defined('SLOTS_ENABLE_PAGINATION') && SLOTS_ENABLE_PAGINATION && count($slots) >= intval($atts['limit'])): ?>
         <div class="slots-pagination">
             <button class="load-more-slots" data-page="1" data-limit="<?php echo esc_attr($atts['limit']); ?>" data-sort="<?php echo esc_attr($atts['sort']); ?>">
                 <?php _e('Load More Slots', 'slots'); ?>
