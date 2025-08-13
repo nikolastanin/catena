@@ -810,7 +810,7 @@ class Slots_Admin {
         
         // Prepare variables for replacement
         $variables = array(
-            '{{slot_image}}' => !empty($slot_data['thumbnail']) ? $slot_data['thumbnail'] : SLOTS_PLUGIN_URL . 'assets/images/default-slot.svg',
+            '{{slot_image}}' => !empty($slot_data['thumbnail']) ? $slot_data['thumbnail'] : SLOTS_PLUGIN_URL . 'assets/images/default-slot.avif',
             '{{slot_title}}' => !empty($slot_data['title']) ? esc_html($slot_data['title']) : '',
             '{{slot_provider}}' => !empty($slot_data['provider_name']) ? '<div class="slot-card-provider">' . esc_html($slot_data['provider_name']) . '</div>' : '',
             '{{slot_rating}}' => !empty($slot_data['star_rating']) ? '<div class="slot-card-rating"><span class="rating-value">' . number_format($slot_data['star_rating'], 1) . '</span></div>' : '',
@@ -916,7 +916,7 @@ class Slots_Admin {
      */
     private static function render_default_slot_card($slot_data) {
         // Default image if no thumbnail
-        $default_image = SLOTS_PLUGIN_URL . 'assets/images/default-slot.svg';
+        $default_image = SLOTS_PLUGIN_URL . 'assets/images/default-slot.avif';
         $slot_image = !empty($slot_data['thumbnail']) ? $slot_data['thumbnail'] : $default_image;
         
         // Format RTP

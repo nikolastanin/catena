@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 $settings = get_option('slots_settings', array());
 
 // Default image if no thumbnail
-$default_image = SLOTS_PLUGIN_URL . 'assets/images/default-slot.svg';
+$default_image = SLOTS_PLUGIN_URL . 'assets/images/default-slot.avif';
 $slot_image = !empty($slot['thumbnail']) ? $slot['thumbnail'] : $default_image;
 
 // Format RTP
