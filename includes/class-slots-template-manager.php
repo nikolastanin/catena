@@ -64,12 +64,7 @@ class Slots_Template_Manager {
         }
     }
     
-    /**
-     * Get available templates
-     */
-    public function get_available_templates() {
-        return $this->available_templates;
-    }
+
     
     /**
      * Get template by key
@@ -150,18 +145,7 @@ class Slots_Template_Manager {
         }
     }
     
-    /**
-     * Get template options for admin
-     */
-    public function get_template_options() {
-        $options = array();
-        
-        foreach ($this->available_templates as $key => $template) {
-            $options[$key] = $template['name'];
-        }
-        
-        return $options;
-    }
+
     
     /**
      * Validate template key

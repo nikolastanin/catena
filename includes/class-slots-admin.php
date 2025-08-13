@@ -50,12 +50,7 @@ class Slots_Admin {
 
     }
     
-    /**
-     * Main admin page
-     */
-    public function admin_page() {
-        include SLOTS_PLUGIN_DIR . 'admin/admin-page.php';
-    }
+
     
     /**
      * Settings page
@@ -1033,13 +1028,6 @@ class Slots_Admin {
         </div>
         <?php
         return ob_get_clean();
-    }
-    
-    /**
-     * Demo page
-     */
-    public function demo_page() {
-        include SLOTS_PLUGIN_DIR . 'templates/demo-page.php';
     }
     
 

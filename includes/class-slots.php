@@ -19,52 +19,11 @@ class Slots {
      */
     public $version = SLOTS_PLUGIN_VERSION;
     
-    /**
-     * Plugin instance
-     *
-     * @var Slots
-     */
-    private static $instance = null;
+
     
-    /**
-     * Admin instance
-     *
-     * @var Slots_Admin
-     */
-    private $admin = null;
+
     
-    /**
-     * Public instance
-     *
-     * @var Slots_Public
-     */
-    private $public = null;
-    
-    /**
-     * Post types instance
-     *
-     * @var Slots_Post_Types
-     */
-    private $post_types = null;
-    
-    /**
-     * REST API instance
-     *
-     * @var Slots_REST_API
-     */
-    private $rest_api = null;
-    
-    /**
-     * Get plugin instance
-     *
-     * @return Slots
-     */
-    public static function get_instance() {
-        if (null === self::$instance) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
+
     
     /**
      * Constructor
@@ -103,17 +62,17 @@ class Slots {
         
         // Initialize admin
         if (is_admin()) {
-            $this->admin = new Slots_Admin();
+            new Slots_Admin();
         }
         
         // Initialize public
-        $this->public = new Slots_Public();
+        new Slots_Public();
         
         // Initialize post types
-        $this->post_types = new Slots_Post_Types();
+        new Slots_Post_Types();
         
         // Initialize REST API
-        $this->rest_api = new Slots_REST_API();
+        new Slots_REST_API();
     }
     
     /**

@@ -377,47 +377,7 @@ class Slots_Public {
         );
     }
     
-    /**
-     * Filter slot post content to append slot_detail shortcode if not present
-     * 
-     * @param string $content The post content
-     * @return string Modified content
-     */
-    public function filter_slot_content($content) {
-        // Prevent infinite loop by checking if we're already processing
-        static $processing = false;
-        if ($processing) {
-            return $content;
-        }
-        
-        // Only apply to slot post types
-        if (get_post_type() !== 'slot') {
-            return $content;
-        }
-        
-        // Only apply on single slot pages
-        if (!is_singular('slot')) {
-            return $content;
-        }
-        
-        // Check if slot_detail already exists in content using regex
-        if (preg_match('/slot_detail/', $content)) {
-            // slot_detail already exists, return content as is
-            return $content;
-        }
-        
-        // Set processing flag to prevent recursion
-        $processing = true;
-        
-        // Append slot_detail shortcode to the top of existing content
-        $slot_detail = do_shortcode('[slot_detail]');
-        $result = $slot_detail . "\n\n" . $content;
-        
-        // Reset processing flag
-        $processing = false;
-        
-        return $result;
-    }
+
     
 
     

@@ -18,7 +18,6 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('SLOTS_PLUGIN_FILE', __FILE__);
 define('SLOTS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('SLOTS_PLUGIN_URL', plugin_dir_url(__FILE__));
 // todo: remove this
@@ -58,6 +57,11 @@ function slots_activate() {
     // Create custom post type
     $post_types = new Slots_Post_Types();
     $post_types->register_post_types();
+    
+    // Set permalinks to post name
+    if (get_option('permalink_structure') !== '/%postname%/') {
+        update_option('permalink_structure', '/%postname%/');
+    }
     
     // Flush rewrite rules
     flush_rewrite_rules();

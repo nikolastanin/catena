@@ -45,13 +45,6 @@ class Slots_Themes {
     }
     
     /**
-     * Get all available themes
-     */
-    public function get_themes() {
-        return $this->themes;
-    }
-    
-    /**
      * Get theme by key
      */
     public function get_theme($key) {
