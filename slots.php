@@ -57,7 +57,7 @@ register_activation_hook(__FILE__, 'slots_activate');
 function slots_activate() {
     // Create custom post type
     $post_types = new Slots_Post_Types();
-    $post_types->create_slot_post_type();
+    $post_types->register_post_types();
     
     // Flush rewrite rules
     flush_rewrite_rules();
