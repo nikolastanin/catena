@@ -121,22 +121,31 @@ class Slots {
      */
     public function enqueue_scripts() {
         wp_enqueue_style(
-            'slots-public',
-            SLOTS_PLUGIN_URL . 'assets/css/slots-public.css',
+            'slots-frontend',
+            SLOTS_PLUGIN_URL . 'assets/dist/css/slots-frontend.css',
             array(),
             $this->version
         );
         
         wp_enqueue_script(
-            'slots-public',
-            SLOTS_PLUGIN_URL . 'assets/js/slots-public.js',
+            'slots-frontend',
+            SLOTS_PLUGIN_URL . 'assets/dist/js/slots-frontend.js',
             array('jquery'),
+            $this->version,
+            true
+        );
+
+        // todo:this is for debug, real setup with vite for production, but didnt have time to get it working
+        wp_enqueue_script(
+            'tailwindcss',
+             'https://cdn.tailwindcss.com',
+            [],
             $this->version,
             true
         );
         
         // Localize script for AJAX
-        wp_localize_script('slots-public', 'slots_ajax', array(
+        wp_localize_script('slots-frontend', 'slots_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('slots_nonce')
         ));
@@ -148,17 +157,23 @@ class Slots {
     public function admin_enqueue_scripts() {
         wp_enqueue_style(
             'slots-admin',
-            SLOTS_PLUGIN_URL . 'assets/css/slots-admin.css',
+            SLOTS_PLUGIN_URL . 'assets/dist/css/slots-admin.css',
             array(),
             $this->version
         );
         
         wp_enqueue_script(
             'slots-admin',
-            SLOTS_PLUGIN_URL . 'assets/js/slots-admin.js',
+            SLOTS_PLUGIN_URL . 'assets/dist/js/slots-admin.js',
             array('jquery'),
             $this->version,
             true
         );
+        
+        // Localize admin script
+        wp_localize_script('slots-admin', 'slots_admin', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('slots_admin_nonce')
+        ));
     }
 }

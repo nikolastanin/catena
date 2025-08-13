@@ -21,6 +21,7 @@ if (!defined('ABSPATH')) {
 define('SLOTS_PLUGIN_FILE', __FILE__);
 define('SLOTS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('SLOTS_PLUGIN_URL', plugin_dir_url(__FILE__));
+// todo: remove this
 // define('SLOTS_PLUGIN_VERSION', '1.0.0');
 define('SLOTS_PLUGIN_VERSION', time());
 define('SLOTS_PLUGIN_BASENAME', plugin_basename(__FILE__));

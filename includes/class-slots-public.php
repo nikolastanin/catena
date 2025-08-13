@@ -38,19 +38,12 @@ class Slots_Public {
      * Enqueue scripts and styles
      */
     public function enqueue_scripts() {
-        // Enqueue Tailwind CSS from CDN
-        wp_enqueue_style(
-            'tailwindcss',
-            'https://cdn.jsdelivr.net/npm/tailwindcss@3.4.0/dist/tailwind.min.css',
-            array(),
-            '3.4.0'
-        );
         
-        // Enqueue main CSS
+        // Enqueue main CSS (built by Vite)
         wp_enqueue_style(
-            'slots-public',
-            SLOTS_PLUGIN_URL . 'assets/css/slots-public.css',
-            array('tailwindcss'),
+            'slots-frontend',
+            SLOTS_PLUGIN_URL . 'assets/dist/css/slots-frontend.css',
+            array(),
             SLOTS_PLUGIN_VERSION
         );
         
@@ -59,23 +52,22 @@ class Slots_Public {
         $current_theme = $themes->get_current_theme();
         $themes->enqueue_theme($current_theme);
         
-        // Add Tailwind CSS fallback and debugging
-        add_action('wp_head', array($this, 'add_tailwind_fallback'), 20);
+
         
         // Enqueue jQuery (if not already loaded)
         wp_enqueue_script('jquery');
         
-        // Enqueue custom JavaScript
+        // Enqueue custom JavaScript (built by Vite)
         wp_enqueue_script(
-            'slots-public',
-            SLOTS_PLUGIN_URL . 'assets/js/slots-public.js',
+            'slots-frontend',
+            SLOTS_PLUGIN_URL . 'assets/dist/js/slots-frontend.js',
             array('jquery'),
             SLOTS_PLUGIN_VERSION,
             true
         );
         
         // Localize script for AJAX
-        wp_localize_script('slots-public', 'slots_ajax', array(
+        wp_localize_script('slots-frontend', 'slots_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('slots_nonce'),
             'strings' => array(
@@ -427,102 +419,7 @@ class Slots_Public {
         return $result;
     }
     
-    /**
-     * Add Tailwind CSS fallback and debugging
-     */
-    public function add_tailwind_fallback() {
-        echo '<script>
-        // Check if Tailwind CSS is loaded
-        document.addEventListener("DOMContentLoaded", function() {
-            // Test if Tailwind classes are working
-            var testElement = document.createElement("div");
-            testElement.className = "bg-red-500 text-white p-4 rounded";
-            testElement.style.position = "fixed";
-            testElement.style.top = "10px";
-            testElement.style.right = "10px";
-            testElement.style.zIndex = "9999";
-            testElement.innerHTML = "Tailwind Test";
-            document.body.appendChild(testElement);
-            
-            // Remove after 3 seconds
-            setTimeout(function() {
-                if (testElement.parentNode) {
-                    testElement.parentNode.removeChild(testElement);
-                }
-            }, 3000);
-        });
-        </script>';
-        
-        // Also add some basic Tailwind-like styles as fallback
-        echo '<style id="slots-tailwind-fallback">
-        .bg-white { background-color: #ffffff !important; }
-        .border { border-width: 1px !important; }
-        .border-gray-200 { border-color: #e5e7eb !important; }
-        .rounded-xl { border-radius: 0.75rem !important; }
-        .p-6 { padding: 1.5rem !important; }
-        .my-5 { margin-top: 1.25rem !important; margin-bottom: 1.25rem !important; }
-        .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important; }
-        .font-sans { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif !important; }
-        .flex { display: flex !important; }
-        .items-center { align-items: center !important; }
-        .mb-5 { margin-bottom: 1.25rem !important; }
-        .gap-4 { gap: 1rem !important; }
-        .md\\:gap-6 { gap: 1.5rem !important; }
-        .flex-shrink-0 { flex-shrink: 0 !important; }
-        .w-20 { width: 5rem !important; }
-        .h-20 { height: 5rem !important; }
-        .md\\:w-24 { width: 6rem !important; }
-        .md\\:h-24 { height: 6rem !important; }
-        .object-cover { object-fit: cover !important; }
-        .rounded-lg { border-radius: 0.5rem !important; }
-        .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important; }
-        .flex-1 { flex: 1 1 0% !important; }
-        .text-xl { font-size: 1.25rem !important; line-height: 1.75rem !important; }
-        .md\\:text-2xl { font-size: 1.5rem !important; line-height: 2rem !important; }
-        .font-semibold { font-weight: 600 !important; }
-        .text-gray-900 { color: #111827 !important; }
-        .mb-2 { margin-bottom: 0.5rem !important; }
-        .leading-tight { line-height: 1.25 !important; }
-        .text-gray-500 { color: #6b7280 !important; }
-        .text-sm { font-size: 0.875rem !important; line-height: 1.25rem !important; }
-        .bg-gray-100 { background-color: #f3f4f6 !important; }
-        .px-2 { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
-        .py-1 { padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
-        .rounded-md { border-radius: 0.375rem !important; }
-        .text-xs { font-size: 0.75rem !important; line-height: 1rem !important; }
-        .font-medium { font-weight: 500 !important; }
-        .flex-col { flex-direction: column !important; }
-        .md\\:flex-row { flex-direction: row !important; }
-        .mb-6 { margin-bottom: 1.5rem !important; }
-        .bg-gray-50 { background-color: #f9fafb !important; }
-        .text-center { text-align: center !important; }
-        .flex-1 { flex: 1 1 0% !important; }
-        .uppercase { text-transform: uppercase !important; }
-        .font-medium { font-weight: 500 !important; }
-        .tracking-wide { letter-spacing: 0.05em !important; }
-        .mb-1 { margin-bottom: 0.25rem !important; }
-        .text-lg { font-size: 1.125rem !important; line-height: 1.75rem !important; }
-        .font-bold { font-weight: 700 !important; }
-        .inline-block { display: inline-block !important; }
-        .bg-gradient-to-r { background-image: linear-gradient(to right, var(--tw-gradient-stops)) !important; }
-        .from-blue-500 { --tw-gradient-from: #3b82f6 !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(59, 130, 246, 0)) !important; }
-        .to-purple-600 { --tw-gradient-to: #9333ea !important; }
-        .text-white { color: #ffffff !important; }
-        .px-8 { padding-left: 2rem !important; padding-right: 2rem !important; }
-        .py-3\\.5 { padding-top: 0.875rem !important; padding-bottom: 0.875rem !important; }
-        .font-semibold { font-weight: 600 !important; }
-        .text-base { font-size: 1rem !important; line-height: 1.5rem !important; }
-        .transition-all { transition-property: all !important; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important; transition-duration: 150ms !important; }
-        .duration-300 { transition-duration: 300ms !important; }
-        .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important; }
-        .hover\\:shadow-xl:hover { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important; }
-        .hover\\:-translate-y-0\\.5:hover { transform: translateY(-0.125rem) !important; }
-        .active\\:translate-y-0:active { transform: translateY(0) !important; }
-        .min-w-\\[140px\\] { min-width: 140px !important; }
-        .no-underline { text-decoration: none !important; }
-        .hover\\:text-white:hover { color: #ffffff !important; }
-        </style>';
-    }
+
     
     /**
      * Generate single slot card for AJAX requests
