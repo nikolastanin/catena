@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
     root: 'src',
@@ -40,5 +41,8 @@ export default defineConfig({
         alias: {
             '@': resolve(__dirname, 'src')
         }
-    }
+    },
+    plugins: [
+        tailwindcss(),
+    ],
 })
